@@ -7,16 +7,16 @@ struct Point
 {
     double x, y, phase;
 
-    Point(double x = 0, double y = 0, double phase = 0):x(x), y(y), phase(phase){};
+    Point(double x = 0, double y = 0, double phase = 0): x(x), y(y), phase(phase) {};
 };
 
 // bounding box with center and half side, initializes to square of radius 2 centered at origin
 struct Box
 {
     Point center;
-    double radius;  
+    double radius;
 
-    Box(Point center = Point(), double radius = 2): center(center), radius(radius){};
+    Box(Point center = Point(), double radius = 2): center(center), radius(radius) {};
 
     // checks if p is within bounding box
     bool contains(Point p)
@@ -49,32 +49,11 @@ class QuadTree
     void subdivide();
 
     public:
-        QuadTree()
-        {
-            nW = NULL;
-            nE = NULL;
-            sW = NULL;
-            sE = NULL;
-            centroid = Point(100.,0.,0.);
-            mass = 0;
-            boundary = Box();
-        }
+        // constructor
+        QuadTree(Box b);
 
-        ~QuadTree()
-        {
-            delete nW; delete nE; delete sW; delete sE;
-        }
-
-        QuadTree(Box b)
-        {
-            nW = NULL;
-            nE = NULL;
-            sW = NULL;
-            sE = NULL;
-            centroid = Point(100.,0.,0.);
-            mass = 0;
-            boundary = b;
-        }
+        // destructor
+        ~QuadTree();
 
         //insert point into quadtree
         bool insert(Point p);

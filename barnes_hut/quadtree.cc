@@ -2,6 +2,26 @@
 #include <vector>
 #include "quadtree.hh"
 
+double LEAF = 1000000.;
+
+// constructor
+void QuadTree::QuadTree(Box b = Box())
+{
+    nW = NULL;
+    nE = NULL;
+    sW = NULL;
+    sE = NULL;
+    centroid = Point(LEAF, 0., 0.);
+    mass = 0;
+    boundary = b;
+}
+
+// destructor
+void QuadTree::~QuadTree()
+{
+    delete nW; delete nE; delete sW; delete sE;
+}
+
 // create four children
 void QuadTree::subdivide()
 {
@@ -22,21 +42,19 @@ void QuadTree::subdivide()
 
 // insert a point into the QuadTree, subdividing if needed
 bool QuadTree::insert(Point p)
-{  
+{
     // ignore objects that are not in current bounds, this should never happen
     if (!boundary.contains(p)) return false;
 
     // if there is space in this quad tree and no subdivisions
-    if (centroid.x == 100)
-    {
+    if (centroid.x == LEAF){
         centroid = p;
         mass++;
         return true;
     }
 
     // subdivide
-    if (nW == NULL)
-    {
+    if (nW == NULL){
         subdivide();
         if (nW->boundary.contains(centroid)) nW->insert(centroid);
         if (nE->boundary.contains(centroid)) nE->insert(centroid);
@@ -57,29 +75,28 @@ bool QuadTree::insert(Point p)
 void QuadTree::update_centroid()
 {
     // only traverse further if there are children
-    if (nW != NULL)
-    {
+    if (nW != NULL){
         Point p1, p2, p3, p4, avg;
         int m1=0, m2=0, m3=0, m4=0, m;
         double x_bar, y_bar, phase_bar;
 
         // if child has centroid, then update and retrieve it
-        if (nW->centroid.x == 100){
+        if (nW->centroid.x == LEAF){
             nW->update_centroid();
             p1 = nW->centroid;
             m1 = nW->mass;
         }
-        if (nE->centroid.x == 100){
+        if (nE->centroid.x == LEAF){
             nE->update_centroid();
             p2 = nE->centroid;
             m2 = nE->mass;
         }
-        if (sE->centroid.x == 100){
+        if (sE->centroid.x == LEAF){
             sE->update_centroid();
             p3 = sE->centroid;
             m3 = sE->mass;
         }
-        if (sW->centroid.x == 100){
+        if (sW->centroid.x == LEAF){
             sW->update_centroid();
             p4 = sW->centroid;
             m4 = sW->mass;
@@ -100,7 +117,7 @@ std::vector<double> QuadTree::get_centroids(double x, double y, double theta)
 {
     std::vector<double> out;
 
-    if (centroid.x == 100){
+    if (centroid.x == LEAF){
         return out;
     }
 
@@ -108,8 +125,7 @@ std::vector<double> QuadTree::get_centroids(double x, double y, double theta)
     double cy = boundary.center.y;
     double cw = 2 * boundary.radius;
 
-    if (nW == NULL || cw/(sqrt((x-cx)*(x-cx)+(y-cy)*(y-cy)))<theta)
-    {
+    if (nW == NULL || cw/(sqrt((x-cx)*(x-cx)+(y-cy)*(y-cy)))<theta){
         if (centroid.x == x && centroid.y == y) return out;
 
         out.push_back(centroid.x);

@@ -22,11 +22,11 @@ struct swarm {
 
     void operator()(const vector<double> &x, vector<double> &dxdt, double t) const {
 #pragma omp parallel for schedule(dynamic)
-            for(size_t i = 0; i < n; i++) {
-                dxdt[3*i] = 0.;
-                dxdt[3*i + 1] = 0.;
-                dxdt[3*i + 2] = 0.1;
-            }
+        for(size_t i = 0; i < n; i++) {
+            dxdt[3*i] = 0.;
+            dxdt[3*i + 1] = 0.;
+            dxdt[3*i + 2] = 0.1;
+        }
 
 #pragma omp parallel for reduction(vec_add:dxdt) schedule(dynamic)
         for(size_t i = 0; i < n; i++) {
@@ -46,18 +46,18 @@ struct swarm {
                         dxdt[xi] += xdot;
                         dxdt[yi] += ydot;
                         dxdt[ti] += tdot;
-                        dxdt[xj] += -1*xdot;
-                        dxdt[yj] -= -1*ydot;
-                        dxdt[tj] -= -1*tdot;
-                }
+                        dxdt[xj] -= xdot;
+                        dxdt[yj] -= ydot;
+                        dxdt[tj] -= tdot;
             }
         }
+    }
 };
 
 void print_points(const size_t n, const vector<double> &x, bool final) {
-        ofstream file;
-        file.open(final ? "final.csv" : "init.csv");
-        for(size_t i = 0; i < n; i++) {
+   	ofstream file;
+    file.open(final ? "final.csv" : "init.csv");
+    for(size_t i = 0; i < n; i++) {
         file << x[3*i] << "," << x[3*i + 1] << "," << x[3*i + 2] << endl;
     }
     file.close();

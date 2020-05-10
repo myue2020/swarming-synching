@@ -34,9 +34,6 @@ struct swarm_barnes_hut {
             tree.insert(Point(x[xi], x[yi], x[ti]));
         }
 
-        // number of parallel threads
-        omp_set_num_threads(1);
-
 #pragma omp parallel for reduction(vec_add:dxdt) schedule(dynamic)
         for(size_t i = 0; i < n; i++) {
             size_t xi = 3*i, yi = 3*i + 1, ti = 3*i + 2;
@@ -77,7 +74,7 @@ int main(int argc, char **argv) {
 //	MPI_Comm_size(MPI_COMM_WORLD, &size);
 
     srand(time(NULL));
-    const size_t n = 500;
+    const size_t n = stoi(argv[2]);
     const double dt = 0.1;
 
     // (0.1, 1) uniform
@@ -90,7 +87,6 @@ int main(int argc, char **argv) {
 
     vector<double> x(3*n);
 
-// #pragma omp parallel for schedule(dynamic)
     for(size_t i = 0; i < n; i++) {
         double r = ((double) rand())/((double) RAND_MAX)*1.;
         double theta = ((double) rand())/((double) RAND_MAX)*2.*M_PI;
@@ -100,6 +96,10 @@ int main(int argc, char **argv) {
     }
 
     print_points(n, x, false);
+
+    // number of parallel threads
+    omp_set_num_threads(stoi(argv[1]));
+
     swarm_barnes_hut group(n, J, K, theta_threshold);
     double t0 = omp_get_wtime();
     integrate_const(runge_kutta4< vector<double> >(), boost::ref(group), x, 0., 50., dt);

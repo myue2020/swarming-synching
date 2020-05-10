@@ -16,6 +16,11 @@ Hybrid implementation of two algorithms based on O'Keefe's Swarmalator model.
 Your web page should include screenshots of your software that demonstrate how it functions. You should include a link to your source code.
 
 
+
+### Background
+The swarm behavior is the collective motion of a large number of self-propelled entities. Many swarming systems in Nature show the remarkable ability to spontaneously fall into synchrony, giving rise to many bio-inspired models. Many researchers have studied the close relation between swarming and synchronization, which interestingly represent two effects that stand as "spatiotemporal opposites".  
+N-body problem and is traditionally compute intensive
+
 <table>
 <tr>
 <td><img src="Images/refs/bees.jpg"/></td>
@@ -23,16 +28,17 @@ Your web page should include screenshots of your software that demonstrate how i
 </tr>
 </table>
 
-### Background
-The swarm behavior is the collective motion of a large number of self-propelled entities. Many swarming systems in Nature show the remarkable ability to spontaneously fall into synchrony, giving rise to many bio-inspired models. Many researchers have studied the close relation between swarming and synchronization, which interestingly represent two effects that stand as "spatiotemporal opposites".  
-N-body problem and is traditionally compute intensive
-
 ### Description
-Naively, the Swarming-Synching model can be simulated by pairwise calculation of aggregation and synchronization forces of individual points and adding up all such contributions on all the entities in the system. Such an approach has a time complexity of O($N^{2}$) and scales up quadratically. Most of the time, when we deal with realistic 
+Naively, the Swarming-Synching model can be simulated by pairwise calculation of aggregation and synchronization forces of individual points and adding up all such contributions on all the entities in the system. Such an approach has a quadratic time complexity and scales up very quickly. Most of the time, when we deal with realistic 
 
+### Infrastructure
+### Dependents
 ### Implementation
+#### Naive Algorithm
+<img src="Images/refs/pairwise.png"/>
 
-
+#### Barnes-Hut Algorithm
+<img src="Images/refs/barnes8.png"/>
 
 ### Example
 #### Plotting Into Graph
@@ -41,3 +47,6 @@ This is example using matplotlib to plot graphs
 ### Runtime Analysis
 
 ### References
+1. O’Keeffe and Bettstetter. *A review of swarmalators and their potential in bio-inspired computing}*  https://arxiv.org/pdf/1903.11561.pdf. 2019. 
+2. O’Keeffe, Hong, and Strogatz. *Oscillators that sync and swarm*,  https://www.nature.com/articles/s41467-017-01190-3. 2017.
+3. Gan and Xu. *Efficient Implementation of the Barnes-Hut Octree Algorithm for Monte Carlo Simulations of Charged Systems*  https://arxiv.org/pdf/1305.1825.pdf. 2013.

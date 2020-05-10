@@ -1,11 +1,11 @@
 #include <iostream>
+#include <cstdlib>
 #include <fstream>
 #include <utility>
 #include <boost/numeric/odeint.hpp>
 #include <boost/numeric/odeint/external/openmp/openmp.hpp>
 #include <boost/numeric/odeint/external/mpi/mpi.hpp>
 #include <omp.h>
-#include <mpi.h>
 
 using namespace std;
 using namespace boost::numeric::odeint;
@@ -23,26 +23,27 @@ struct swarm {
         : n(n_), omega(n_, 0.1), J(J_), K(K_) {}
 
     void operator()(const mpi_state< vector<double> > &x, mpi_state< vector<double> > &dxdt, double t) const {
+        assert(dxdt().size() % 3 == 0);
         vector<double> xx(n);
         size_t start = n / x.world.size() * x.world.rank();
-        copy(temp.begin(), temp.end(), xx.begin() + start);
+        copy(x().begin(), x().end(), xx.begin() + start);
         for(size_t i = 1; i < x.world.size(); i++) {
             int in_rank = (x.world.rank() - i) % x.world.size(), out_rank = (x.world.rank() + i) % x.world.size();
             vector<double> temp;
-            x.world.isend(out_rank, 0, x());
-            x.world.irecv(in_rank, 0, temp).wait();
+            x.world.send(out_rank, 0, x());
+            x.world.recv(in_rank, 0, temp);
             copy(temp.begin(), temp.end(), xx.begin() + n / x.world.size() * in_rank);
         }
+        vector<double> dxxdt = dxdt();
 #pragma omp parallel for
         for(size_t i = 0; i < dxdt().size() / 3; i++) {
-            dxdt[3*i] = 0.;
-            dxdt[3*i + 1] = 0.;
-            dxdt[3*i + 2] = 0.1;
+            dxxdt[3*i] = 0.;
+            dxxdt[3*i + 1] = 0.;
+            dxxdt[3*i + 2] = 0.1;
         }
-
-#pragma omp parallel for reduction(vec_add:dxdt()) schedule(dynamic)
-        for(size_t i = 0; i < dxdt().size() / 3; i++) {
-                size_t xi = start + 3*i, yi = start + 3*i + 1, ti = start + 3*i + 2;
+#pragma omp parallel for reduction(vec_add:dxxdt) schedule(dynamic)
+        for(size_t i = 0; i < dxxdt.size() / 3; i++) {
+            size_t xi = start + 3*i, yi = start + 3*i + 1, ti = start + 3*i + 2;
             for(size_t j = 0; j < n; j++) {
                 if (j != i) {
                     int xj = 3*j, yj = 3*j + 1, tj = 3*j + 2;
@@ -56,18 +57,21 @@ struct swarm {
                            xdot = xdot_contrib * dx,
                            ydot = xdot_contrib * dy;
 
-                        dxdt()[xi - start] += xdot;
-                        dxdt()[yi - start] += ydot;
-                        dxdt()[ti - start] += tdot;
+                        dxxdt[xi - start] += xdot;
+                        dxxdt[yi - start] += ydot;
+                        dxxdt[ti - start] += tdot;
                 }
             }
         }
-
+#pragma omp parallel for
+        for(size_t i = 0; i < dxxdt.size(); i++) {
+                dxdt()[i] = dxxdt[i];
+        }
     }
 };
 
 void print_points(const size_t n, const vector<double> &x, bool final) {
-   	ofstream file;
+    ofstream file;
     file.open(final ? "final.csv" : "init.csv");
     for(size_t i = 0; i < n; i++) {
         file << x[3*i] << "," << x[3*i + 1] << "," << x[3*i + 2] << endl;
@@ -104,11 +108,12 @@ int main(int argc, char **argv) {
     swarm group(n, J, K);
     double t0 = omp_get_wtime();
     integrate_const(runge_kutta4< mpi_state< vector<double> > >(), boost::ref(group), x_split, 0., 50., dt);
-    if (rank == 0) {
-    	printf("Time taken: %f\n", omp_get_wtime()-t0);
+    if (world.rank() == 0) {
+        printf("Time taken: %f\n", omp_get_wtime()-t0);
     }
     unsplit(x_split, x);
     if (world.rank() == 0) {
         print_points(n, x, true);
     }
 }
+                                                 

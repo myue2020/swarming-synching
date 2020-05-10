@@ -2,9 +2,9 @@
 #include <fstream>
 #include <utility>
 #include <boost/numeric/odeint.hpp>
-// #include <boost/numeric/odeint/external/mpi/mpi.hpp>
+//#include <boost/numeric/odeint/external/mpi/mpi.hpp>
 #include <omp.h>
-// #include <mpi.h>
+//#include <mpi.h>
 #include "./quadtree.cc"
 using namespace std;
 using namespace boost::numeric::odeint;
@@ -68,6 +68,7 @@ void print_points(const size_t n, const vector<double> &x, bool final) {
 }
 
 int main(int argc, char **argv) {
+    
 //	int rank, size;
 //	MPI_Init(&argc, &argv);
 //	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -107,5 +108,7 @@ int main(int argc, char **argv) {
     	printf("Time taken: %f\n", omp_get_wtime()-t0);
     // }
     print_points(n, x, true);
-    // MPI_Finalize();
+//    MPI_Finalize();
+    
+    return 0; 
 }

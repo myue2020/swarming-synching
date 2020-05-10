@@ -68,7 +68,7 @@ void print_points(const size_t n, const vector<double> &x, bool final) {
 }
 
 int main(int argc, char **argv) {
-    
+
 //	int rank, size;
 //	MPI_Init(&argc, &argv);
 //	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -109,6 +109,6 @@ int main(int argc, char **argv) {
     // }
     print_points(n, x, true);
 //    MPI_Finalize();
-    
-    return 0; 
+
+    return 0;
 }

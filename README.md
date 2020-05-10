@@ -19,21 +19,26 @@ Your web page should include screenshots of your software that demonstrate how i
 
 <table>
 <tr>
-<td><img src="images/refs/bees.jpg"/></td>
-<td><img src="images/refs/frogs.jpg"/></td>
+<td><img src="Images/refs/bees.jpg"/></td>
+<td><img src="Images/refs/frogs.jpg"/></td>
 </tr>
 </table>
 
 ### Background
+The swarm behavior is the collective motion of a large number of self-propelled entities. Many swarming systems in Nature show the remarkable ability to spontaneously fall into synchrony, giving rise to many bio-inspired models. Many researchers have studied the close relation between swarming and synchronization, which interestingly represent two effects that stand as "spatiotemporal opposites".  
+N-body problem and is traditionally compute intensive
 
 ### Description
+Naively, the Swarming-Synching model can be simulated by pairwise calculation of aggregation and synchronization forces of individual points and adding up all such contributions on all the entities in the system. Such an approach has a time complexity of O($N^{2}$) and scales up quadratically. Most of the time, when we deal with realistic 
+
+### Implementation
 
 
-### Usage
-``
-```
 
 ### Example
 #### Plotting Into Graph
 This is example using matplotlib to plot graphs
 
+### Runtime Analysis
+
+### References

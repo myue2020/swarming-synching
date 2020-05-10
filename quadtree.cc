@@ -76,14 +76,16 @@ struct QuadTree {
         if (!boundary.contains(p)) throw;
 
         // if there is space in this quad tree, add point
-        if (!has_centroid) {
+        if (is_empty) {
             centroid = p;
             mass++;
-            has_centroid = true;
+            is_empty = false;
             return true;
         }
 
-        // else subdivide
+        // this tree already has a point aka centroid
+
+        // if no children, subdivide
         if (is_leaf) {
             subdivide();
             if (nW->boundary.contains(centroid)) nW->insert(centroid);
@@ -93,62 +95,29 @@ struct QuadTree {
             else throw;
         }
 
+        // update current tree centroid
+        // weighted averages of coordinate and phase
+        int m_new = mass + 1
+        x_bar = (mass * centroid.x + p.x) / m_new;
+        y_bar = (mass * centroid.y + p.y) / m_new;
+        phase_bar = atan2((mass * sin(centroid.phase) + sin(p.phase)) / m_new,
+                          (mass * cos(centroid.phase) + cos(p.phase)) / m_new);
+        centroid = Point(x_bar, y_bar, phase_bar);
+        mass = m_new;
+
         // find new children that will eventually accept this point
-        if (nW->insert(p)) {mass++; return true;}
-        if (nE->insert(p)) {mass++; return true;}
-        if (sW->insert(p)) {mass++; return true;}
-        if (sE->insert(p)) {mass++; return true;}
+        if (nW->insert(p)) return true;
+        if (nE->insert(p)) return true;
+        if (sW->insert(p)) return true;
+        if (sE->insert(p)) return true;
 
         return false;
-    }
-
-    // update centroid by traversing tree
-    void update_centroid() {
-        // only traverse recursively further if there are children
-        if (!is_leaf) {
-            Point p1, p2, p3, p4, avg;
-            int m1 = 0, m2 = 0, m3 = 0, m4 = 0, m;
-            double x_bar, y_bar, phase_bar;
-
-            // if child has centroid, recursively update it, then retrieve it
-            if (nW->has_centroid){
-                nW->update_centroid();
-                p1 = nW->centroid;
-                m1 = nW->mass;
-            }
-            if (nE->has_centroid){
-                nE->update_centroid();
-                p2 = nE->centroid;
-                m2 = nE->mass;
-            }
-            if (sE->has_centroid){
-                sE->update_centroid();
-                p3 = sE->centroid;
-                m3 = sE->mass;
-            }
-            if (sW->has_centroid){
-                sW->update_centroid();
-                p4 = sW->centroid;
-                m4 = sW->mass;
-            }
-
-            // weighted averages of coordinate and phase
-            m = m1 + m2 + m3 + m4;
-            x_bar = (m1 * p1.x + m2 * p2.x + m3 * p3.x + m4 * p4.x) / m;
-            y_bar = (m1 * p1.y + m2 * p2.y + m3 * p3.y + m4 * p4.y) / m;
-            phase_bar = atan2((m1 * sin(p1.phase) + m2 * sin(p2.phase) +
-                               m3 * sin(p3.phase) + m4 * sin(p4.phase)) / m,
-                              (m1 * cos(p1.phase) + m2 * cos(p2.phase) +
-                               m3 * cos(p3.phase) + m4 * cos(p4.phase)) / m);
-            avg = Point(x_bar, y_bar, phase_bar);
-            centroid = avg;
-        }
     }
 
     std::vector<double> get_centroids(double x, double y, double theta) {
         std::vector<double> out;
 
-        if (!has_centroid){
+        if (is_empty){
             return out;
         }
 
@@ -156,7 +125,9 @@ struct QuadTree {
         double cy = boundary.center.y;
         double cw = 2 * boundary.radius;
 
-        if (nW == NULL || cw/(sqrt((x-cx)*(x-cx)+(y-cy)*(y-cy)))<theta){
+        if (is_leaf ||
+            cw / (sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy))) < theta) {
+                
             if (centroid.x == x && centroid.y == y) return out;
 
             out.push_back(centroid.x);

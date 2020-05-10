@@ -15,6 +15,12 @@ Hybrid implementation of two algorithms based on O'Keefe's Swarmalator model.
 
 Your web page should include screenshots of your software that demonstrate how it functions. You should include a link to your source code.
 
+<table>
+<tr>
+<td><img src="Images/refs/bees.jpg"/></td>
+<td><img src="Images/refs/frogs.jpg"/></td>
+</tr>
+</table>
 
 
 ### Background
@@ -26,13 +32,6 @@ Here, the terms *K* and *J* capture th.... A combination of different *K* and *J
 <img src="Images/refs/states.jpg"/ width = "300" />
 
 The swarmalator model simulation intuitively falls into the category of a special kind of N-body problem, which is traditionally compute intensive. The dynamic scale that needs to be resolved for studying a real-world swarming system in a self-consistent manner is enormous and spans many orders of magnitudes, thus necessitating the use of high performance computing and carefully tailored codes that can utilize various HPC programming models.
-
-<table>
-<tr>
-<td><img src="Images/refs/bees.jpg"/></td>
-<td><img src="Images/refs/frogs.jpg"/></td>
-</tr>
-</table>
 
 ### Description
 Naively, the Swarming-Synching model can be simulated by pairwise calculation of aggregation and synchronization forces of individual points and adding up all such contributions on all the entities in the system. Such an approach has a quadratic time complexity and scales up very quickly. Most of the time, when we deal with realistic problems, the entities in a swarm system can be hundreds of millions. Under these scenarios, the quadratic scaling of the naive algorithm is not feasible and approximate models using tree-based data structures, for example, the Barnes-Hut algorithm is often utilized to facilitate the computation. As far as big compute techniques are concerned, there is large potential for these algorithms to benefit from parallelization methods such as OpenMP and MPI and as the two algorithms use different data structure, there are differences in where the parallelization can take place and eventually contribute to an overall speedup. Our project aims at investigating the performance of parallelized implementation of both the naive algorithm and the Barnes-Hut algorithm that address the same swarming-synching model, to look into the potential of parallelization in both models and to compare the consequent speedups.

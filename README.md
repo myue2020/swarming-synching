@@ -29,7 +29,7 @@ The swarm behavior is the collective motion of a large number of self-propelled 
 
 Here, the terms *K* and *J* capture the tendency to synchronize/desynchronzie and the spatial attraction/repulsion between entites of similar phases respectively. A combination of different *K* and *J* values yield a series of different swarmalator states shown as follows:
 
-<img src="Images/refs/states.png" width = "800" />
+<img src="Images/refs/states.png" width = "900" />
 
 The swarmalator model simulation intuitively falls into the category of a special kind of N-body problem, which is traditionally compute intensive. The dynamic scale that needs to be resolved for studying a real-world swarming system in a self-consistent manner is enormous and spans many orders of magnitudes, thus necessitating the use of high performance computing and carefully tailored codes that can utilize various HPC programming models.
 

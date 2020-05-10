@@ -5,7 +5,7 @@
 struct Point {
     double x, y, phase;
     Point(double x = 0, double y = 0, double phase = 0):
-        x(x), y(y), phase(phase) {};
+        x(x), y(y), phase(phase) {}
 };
 
 // bounding box with center and half side, initializes to square of radius 2 centered at origin
@@ -14,7 +14,7 @@ struct Box {
     double radius;
 
     Box(Point center = Point(), double radius = 2):
-        center(center), radius(radius) {};
+        center(center), radius(radius) {}
 
     // checks if p is within bounding box
     bool contains(Point p) {
@@ -49,7 +49,7 @@ struct QuadTree {
     // constructor
     QuadTree(Box b = Box()):
         is_leaf(true), is_empty(true), nW(NULL), nE(NULL), sW(NULL), sE(NULL),
-        centroid(Point()), mass(0), boundary(b) {};
+        centroid(Point()), mass(0), boundary(b) {}
 
     // create four children
     void subdivide(){
@@ -127,7 +127,7 @@ struct QuadTree {
 
         if (is_leaf ||
             cw / (sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy))) < theta) {
-                
+
             if (centroid.x == x && centroid.y == y) return out;
 
             out.push_back(centroid.x);

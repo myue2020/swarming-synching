@@ -38,7 +38,7 @@ Naively, the Swarming-Synching model can be simulated by pairwise calculation of
 <img src="Images/refs/pairwise.png" width="400"/>
 
 #### Barnes-Hut Algorithm
-<img src="Images/refs/barnes8.png"/>
+<img src="Images/refs/barnes8.png" width="800"/>
 
 ### Example
 #### Plotting Into Graph

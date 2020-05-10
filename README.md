@@ -35,7 +35,7 @@ Naively, the Swarming-Synching model can be simulated by pairwise calculation of
 ### Dependents
 ### Implementation
 #### Naive Algorithm
-<img src="Images/refs/pairwise.png"/>
+<img src="Images/refs/pairwise.png" width="200"/>
 
 #### Barnes-Hut Algorithm
 <img src="Images/refs/barnes8.png"/>

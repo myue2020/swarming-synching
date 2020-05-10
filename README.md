@@ -25,7 +25,8 @@ Your web page should include screenshots of your software that demonstrate how i
 
 ### Background
 The swarm behavior is the collective motion of a large number of self-propelled entities. Many swarming systems in Nature show the remarkable ability to spontaneously fall into synchrony, giving rise to a large number of bio-inspired models. Many researchers have studied the close relation between swarming and synchronization, which interestingly represent two effects that stand as "spatiotemporal opposites". Among them, O'Keefe et al proposed a ‘bottom-up’ models without reference to a background medium, which they called the ‘swarmalators’, to capture their twin identities as swarming oscillators. In the swarmalator model, the paradigmatic model of biological aggregation and synchronization have the following forms:
-<img src="Images/refs/formulae.png" width = "500" />
+
+<img src="Images/refs/formulae.png" width = "450" />
 
 Here, the terms *K* and *J* capture the tendency to synchronize/desynchronzie and the spatial attraction/repulsion between entites of similar phases respectively. A combination of different *K* and *J* values yield a series of different swarmalator states shown as follows:
 

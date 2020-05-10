@@ -42,9 +42,10 @@ https://github.com/myue2020/swarming-synching
 
 ### Infrastructure
 OpenMP and MPI hybrid model on AWS MPI cluster of t2.2xlarge EC2 instances --------------------- *add number of nodes*
+t2.2 xlarge Instance Specs: 
 
-t2.2 xlarge Instance Specs:
 32GiB Memory, 8 vCPU ,Intel Xeon 3.3GHz
+
 Operating System: Ubuntu Server 18.04 LTS
 
 ### Dependents

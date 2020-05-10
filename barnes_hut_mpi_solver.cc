@@ -40,10 +40,6 @@ struct swarm_barnes_hut {
         //broadcast tree to all processes
         boost::mpi::broadcast(world, tree, 0);
 
-        // number of parallel threads
-        omp_set_num_threads(1);
-        
-
 #pragma omp parallel for reduction(vec_add:dxdt) schedule(dynamic)
        
         for(size_t i = 0; i < n; i++) {
@@ -115,6 +111,8 @@ int main(int argc, char **argv) {
         
     }
     
+    // number of parallel threads
+    omp_set_num_threads(stoi(argv[1]));
 
     swarm_barnes_hut group(n, J, K, theta_threshold);
     

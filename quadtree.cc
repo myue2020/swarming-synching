@@ -71,7 +71,7 @@ struct QuadTree {
     }
 
     // insert point into quadtree, updating its centroid in the process
-    bool insert(Point p) {
+    void insert(Point p) {
         // ignore objects that are not in current bounds, this should never happen
         if (!boundary.contains(p)) throw;
 
@@ -80,10 +80,10 @@ struct QuadTree {
             centroid = p;
             mass++;
             is_empty = false;
-            return true;
+            return;
         }
 
-        // this tree already has a point aka centroid
+        // this tree already has a point, aka already has a centroid
 
         // if no children, subdivide
         if (is_leaf) {
@@ -97,21 +97,19 @@ struct QuadTree {
 
         // update current tree centroid
         // weighted averages of coordinate and phase
-        int m_new = mass + 1
-        x_bar = (mass * centroid.x + p.x) / m_new;
-        y_bar = (mass * centroid.y + p.y) / m_new;
-        phase_bar = atan2((mass * sin(centroid.phase) + sin(p.phase)) / m_new,
-                          (mass * cos(centroid.phase) + cos(p.phase)) / m_new);
+        int m_new = mass + 1;
+        double x_bar = (mass * centroid.x + p.x) / m_new;
+        double y_bar = (mass * centroid.y + p.y) / m_new;
+        double phase_bar = atan2((mass * sin(centroid.phase) + sin(p.phase)) / m_new,
+                                 (mass * cos(centroid.phase) + cos(p.phase)) / m_new);
         centroid = Point(x_bar, y_bar, phase_bar);
         mass = m_new;
 
         // find new children that will eventually accept this point
-        if (nW->insert(p)) return true;
-        if (nE->insert(p)) return true;
-        if (sW->insert(p)) return true;
-        if (sE->insert(p)) return true;
-
-        return false;
+        if (nW->boundary.contains(p)) nW->insert(p);
+        else if (nE->boundary.contains(p)) nE->insert(p);
+        else if (sE->boundary.contains(p)) sE->insert(p);
+        else if (sW->boundary.contains(p)) sW->insert(p);
     }
 
     std::vector<double> get_centroids(double x, double y, double theta) {

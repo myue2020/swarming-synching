@@ -2,9 +2,9 @@
 #include <fstream>
 #include <utility>
 #include <boost/numeric/odeint.hpp>
-#include <boost/numeric/odeint/external/mpi/mpi.hpp>
+// #include <boost/numeric/odeint/external/mpi/mpi.hpp>
 #include <omp.h>
-#include <mpi.h>
+// #include <mpi.h>
 #include "./quadtree.cc"
 using namespace std;
 using namespace boost::numeric::odeint;
@@ -25,6 +25,7 @@ struct swarm_barnes_hut {
 // #pragma omp parallel for schedule(dynamic)
         // initialize QuadTree
         QuadTree tree;
+
         for(size_t i = 0; i < n; i++) {
             size_t xi = 3*i, yi = 3*i + 1, ti = 3*i + 2;
             dxdt[xi] = 0.;
@@ -89,7 +90,7 @@ int main(int argc, char **argv) {
     }
 
     print_points(n, x, false);
-    swarm_barnes_hut group(n, J, K);
+    swarm_barnes_hut group(n, J, K, theta);
     double t0 = omp_get_wtime();
     integrate_const(runge_kutta4< vector<double> >(), boost::ref(group), x, 0., 50., dt);
     // if (rank == 0) {

@@ -1,5 +1,8 @@
 # Swarming and Synchronization with Big Compute O'Keefe Model Implementations
 
+Hybrid implementation of two algorithms based on O'Keefe's Swarmalator model.
+(http://en.wikipedia.org/wiki/Mean_shift) clustering in python.
+
 - Description of problem and the need for HPC and/or Big Data
 - Description of solution and comparison with existing work on the problem
 - Description of your model and/or data in detail: where did it come from, how did you acquire it, what does it mean, etc.
@@ -12,3 +15,25 @@
 - Citations
 
 Your web page should include screenshots of your software that demonstrate how it functions. You should include a link to your source code.
+
+
+<table>
+<tr>
+<td><img src="images/refs/bees.jpg"/></td>
+<td><img src="images/refs/frogs.jpg"/></td>
+</tr>
+</table>
+
+### Background
+
+### Description
+
+
+### Usage
+``
+```
+
+### Example
+#### Plotting Into Graph
+This is example using matplotlib to plot graphs
+

@@ -65,7 +65,7 @@ void print_points(const size_t n, const vector<double> &x, bool final) {
 
 int main(int argc, char **argv) {
 	srand(time(NULL));
-    const size_t n = 400;
+    const size_t n = stoi(argv[2]);
     const double J = 1., K = -0.1, dt = 0.1;
     vector<double> x(3*n);
 
@@ -79,6 +79,10 @@ int main(int argc, char **argv) {
     }
 
     print_points(n, x, false);
+
+    // number of parallel threads
+    omp_set_num_threads(stoi(argv[1]));
+
     swarm group(n, J, K);
     double t0 = omp_get_wtime();
     integrate_const(runge_kutta4< vector<double> >(), boost::ref(group), x, 0., 50., dt);

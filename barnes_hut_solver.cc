@@ -9,9 +9,9 @@
 using namespace std;
 using namespace boost::numeric::odeint;
 
-// #pragma omp declare reduction(vec_add : std::vector<double> : \
-//                               std::transform(omp_out.begin(), omp_out.end(), omp_in.begin(), omp_out.begin(), std::plus<double>())) \
-//                     initializer(omp_priv = omp_orig)
+#pragma omp declare reduction(vec_add : std::vector<double> : \
+                              std::transform(omp_out.begin(), omp_out.end(), omp_in.begin(), omp_out.begin(), std::plus<double>())) \
+                    initializer(omp_priv = omp_orig)
 
 struct swarm_barnes_hut {
     vector<double> omega;
@@ -22,7 +22,6 @@ struct swarm_barnes_hut {
         n(n_), omega(n_, 0.1), J(J_), K(K_), theta(theta_) {}
 
     void operator()(const vector<double> &x, vector<double> &dxdt, double t) const {
-// #pragma omp parallel for schedule(dynamic)
         // initialize QuadTree
         QuadTree tree;
 
@@ -35,7 +34,10 @@ struct swarm_barnes_hut {
             tree.insert(Point(x[xi], x[yi], x[ti]));
         }
 
-// #pragma omp parallel for reduction(vec_add:dxdt) schedule(dynamic)
+        // number of parallel threads
+        omp_set_num_threads(4);
+
+#pragma omp parallel for reduction(vec_add:dxdt) schedule(dynamic)
         for(size_t i = 0; i < n; i++) {
             size_t xi = 3*i, yi = 3*i + 1, ti = 3*i + 2;
             std::vector<double> js = tree.get_centroids(x[xi], x[yi], theta);
@@ -75,9 +77,17 @@ int main(int argc, char **argv) {
 //	MPI_Comm_size(MPI_COMM_WORLD, &size);
 
     srand(time(NULL));
-    const size_t n = 100;
+    const size_t n = 500;
     const double dt = 0.1;
-    const double J = 1., K = -0.1, theta = 0.5;
+
+    // (0.1, 1) uniform
+    // (0.1, -1) random
+    // (1, 0) continuous rainbow
+    // (1, -0.1) discrete rainbow
+    // (1, -0.75) mixed rainbow
+    const double J = 1, K = -0.1;
+    const double theta_threshold = 0.1;
+
     vector<double> x(3*n);
 
 // #pragma omp parallel for schedule(dynamic)
@@ -90,7 +100,7 @@ int main(int argc, char **argv) {
     }
 
     print_points(n, x, false);
-    swarm_barnes_hut group(n, J, K, theta);
+    swarm_barnes_hut group(n, J, K, theta_threshold);
     double t0 = omp_get_wtime();
     integrate_const(runge_kutta4< vector<double> >(), boost::ref(group), x, 0., 50., dt);
     // if (rank == 0) {

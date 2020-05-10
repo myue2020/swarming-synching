@@ -1,7 +1,6 @@
 # Swarming and Synchronization with Big Compute O'Keefe Model Implementations
 
 Hybrid implementation of two algorithms based on O'Keefe's Swarmalator model.
-(http://en.wikipedia.org/wiki/Mean_shift) clustering in python.
 
 - Description of problem and the need for HPC and/or Big Data
 - Description of solution and comparison with existing work on the problem

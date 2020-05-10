@@ -3,9 +3,11 @@
 #include <utility>
 #include <boost/numeric/odeint.hpp>
 #include <boost/numeric/odeint/external/mpi/mpi.hpp>
+#include <boost/serialization/access.hpp>
 #include <omp.h>
 #include <mpi.h>
 #include "./quadtree.cc"
+
 using namespace std;
 using namespace boost::numeric::odeint;
 
@@ -24,6 +26,7 @@ struct swarm_barnes_hut {
     void operator()(const vector<double> &x, vector<double> &dxdt, double t) const {
         // initialize QuadTree
         QuadTree tree;
+        
         
         //build tree on process 0
         if(world.rank() == 0){

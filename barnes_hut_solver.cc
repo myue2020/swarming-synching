@@ -35,7 +35,7 @@ struct swarm_barnes_hut {
         }
 
         // number of parallel threads
-        omp_set_num_threads(4);
+        omp_set_num_threads(1);
 
 #pragma omp parallel for reduction(vec_add:dxdt) schedule(dynamic)
         for(size_t i = 0; i < n; i++) {
@@ -86,7 +86,7 @@ int main(int argc, char **argv) {
     // (1, -0.1) discrete rainbow
     // (1, -0.75) mixed rainbow
     const double J = 1, K = -0.1;
-    const double theta_threshold = 0.1;
+    const double theta_threshold = 0.5;
 
     vector<double> x(3*n);
 

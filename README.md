@@ -50,7 +50,8 @@ Operating System: Ubuntu Server 18.04 LTS
 
 ### Dependencies
 Odeint C++ Library
-Odeint is a modern C++ library for numerically solving Ordinary Differential Equations. We use built in functions in Odeint to handle to integration off all time steps.
+
+Odeint is a modern C++ library for numerically solving Ordinary Differential Equations. We use built-in functions in Odeint to handle the integration off all time steps.
 
 ### Implementation
 #### Naive Algorithm 

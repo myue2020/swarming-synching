@@ -75,7 +75,7 @@ int main(int argc, char **argv) {
 //	MPI_Comm_size(MPI_COMM_WORLD, &size);
 
     srand(time(NULL));
-    const size_t n = 25;
+    const size_t n = 100;
     const double dt = 0.1;
     const double J = 1., K = -0.1, theta = 0.5;
     vector<double> x(3*n);

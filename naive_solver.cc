@@ -30,25 +30,25 @@ struct swarm {
 
 #pragma omp parallel for reduction(vec_add:dxdt) schedule(dynamic)
         for(size_t i = 0; i < n; i++) {
-                size_t xi = 3*i, yi = 3*i + 1, ti = 3*i + 2;
+            size_t xi = 3*i, yi = 3*i + 1, ti = 3*i + 2;
             for(size_t j = 0; j < i; j++) {
-                    int xj = 3*j, yj = 3*j + 1, tj = 3*j + 2;
-                    double dx = x[xj] - x[xi],
-                           dy = x[yj] - x[yi],
-                           dth = x[tj] - x[ti],
-                           distance_sq = (dx*dx+dy*dy),
-                           distance = sqrt(distance_sq),
-                           xdot_contrib = (((1. + J*cos(dth))/distance - 1./distance_sq))/n,
-                           tdot = K/n*sin(dth)/distance,
-                           xdot = xdot_contrib * dx,
-                           ydot = xdot_contrib * dy;
+                int xj = 3*j, yj = 3*j + 1, tj = 3*j + 2;
+                double dx = x[xj] - x[xi],
+                       dy = x[yj] - x[yi],
+                       dth = x[tj] - x[ti],
+                       distance_sq = (dx*dx+dy*dy),
+                       distance = sqrt(distance_sq),
+                       xdot_contrib = (((1. + J*cos(dth))/distance - 1./distance_sq))/n,
+                       tdot = K/n*sin(dth)/distance,
+                       xdot = xdot_contrib * dx,
+                       ydot = xdot_contrib * dy;
 
-                        dxdt[xi] += xdot;
-                        dxdt[yi] += ydot;
-                        dxdt[ti] += tdot;
-                        dxdt[xj] -= xdot;
-                        dxdt[yj] -= ydot;
-                        dxdt[tj] -= tdot;
+                dxdt[xi] += xdot;
+                dxdt[yi] += ydot;
+                dxdt[ti] += tdot;
+                dxdt[xj] -= xdot;
+                dxdt[yj] -= ydot;
+                dxdt[tj] -= tdot;
             }
         }
     }

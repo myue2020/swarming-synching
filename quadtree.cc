@@ -1,151 +1,157 @@
 #include <cmath>
 #include <vector>
-#include "quadtree.hh"
 
-double LEAF = 1000000.;
+// point structure, contains coordinates and phase
+struct Point {
+    double x, y, phase;
+    Point(double x = 0, double y = 0, double phase = 0):
+        x(x), y(y), phase(phase) {}
+};
 
-// constructor
-void QuadTree::QuadTree(Box b = Box())
-{
-    nW = NULL;
-    nE = NULL;
-    sW = NULL;
-    sE = NULL;
-    centroid = Point(LEAF, 0., 0.);
-    mass = 0;
-    boundary = b;
-}
+// bounding box with center and half side, initializes to square of radius 2 centered at origin
+struct Box {
+    Point center;
+    double radius;
 
-// destructor
-void QuadTree::~QuadTree()
-{
-    delete nW; delete nE; delete sW; delete sE;
-}
+    Box(Point center = Point(), double radius = 2):
+        center(center), radius(radius) {}
 
-// create four children
-void QuadTree::subdivide()
-{
-    double subradius = boundary.radius / 2;
+    // checks if p is within bounding box
+    bool contains(Point p) {
+        return p.x < center.x + radius &&
+               p.x > center.x - radius &&
+               p.y < center.y + radius &&
+               p.y > center.y - radius;
+    }
+};
 
-    Point qcenter = Point(boundary.center.x - subradius, boundary.center.y + subradius);
-    nW = new QuadTree(Box(qcenter, subradius));
+// each QuadTree contains one point, initializes to square of radius 2 centered at origin
+struct QuadTree {
+    // true if node is a leaf, aka no children
+    bool is_leaf;
+    // four children
+    QuadTree* nW;
+    QuadTree* nE;
+    QuadTree* sW;
+    QuadTree* sE;
 
-    qcenter = Point(boundary.center.x + subradius, boundary.center.y + subradius);
-    nE = new QuadTree(Box(qcenter, subradius));
+    // bounding box to represent the boundaries of this quad tree
+    Box boundary;
 
-    qcenter = Point(boundary.center.x - subradius, boundary.center.y - subradius);
-    sW = new QuadTree(Box(qcenter, subradius));
+    // true if there are no points within this tree, aka no centroid
+    bool is_empty;
+    // centroid, contains coordinate and phase
+    Point centroid;
 
-    qcenter = Point(boundary.center.x + subradius, boundary.center.y - subradius);
-    sE = new QuadTree(Box(qcenter, subradius));
-}
+    // "mass", aka how many points
+    int mass;
 
-// insert a point into the QuadTree, subdividing if needed
-bool QuadTree::insert(Point p)
-{
-    // ignore objects that are not in current bounds, this should never happen
-    if (!boundary.contains(p)) return false;
+    // constructor
+    QuadTree(Box b = Box()):
+        is_leaf(true), is_empty(true), nW(NULL), nE(NULL), sW(NULL), sE(NULL),
+        centroid(Point()), mass(0), boundary(b) {}
 
-    // if there is space in this quad tree and no subdivisions
-    if (centroid.x == LEAF){
-        centroid = p;
-        mass++;
-        return true;
+    // create four children
+    void subdivide(){
+        double subradius = boundary.radius / 2;
+
+        Point qcenter = Point(boundary.center.x - subradius, boundary.center.y + subradius);
+        nW = new QuadTree(Box(qcenter, subradius));
+
+        qcenter = Point(boundary.center.x + subradius, boundary.center.y + subradius);
+        nE = new QuadTree(Box(qcenter, subradius));
+
+        qcenter = Point(boundary.center.x - subradius, boundary.center.y - subradius);
+        sW = new QuadTree(Box(qcenter, subradius));
+
+        qcenter = Point(boundary.center.x + subradius, boundary.center.y - subradius);
+        sE = new QuadTree(Box(qcenter, subradius));
+
+        is_leaf = false;
     }
 
-    // subdivide
-    if (nW == NULL){
-        subdivide();
-        if (nW->boundary.contains(centroid)) nW->insert(centroid);
-        if (nE->boundary.contains(centroid)) nE->insert(centroid);
-        if (sE->boundary.contains(centroid)) sE->insert(centroid);
-        if (sW->boundary.contains(centroid)) sW->insert(centroid);
-    }
+    // insert point into quadtree, updating its centroid in the process
+    void insert(Point p) {
+        // ignore objects that are not in current bounds, this should never happen
+        if (!boundary.contains(p)) throw;
 
-    // find new children that will eventually accept this point
-    if (nW->insert(p)) {mass++; return true;}
-    if (nE->insert(p)) {mass++; return true;}
-    if (sW->insert(p)) {mass++; return true;}
-    if (sE->insert(p)) {mass++; return true;}
-
-    return false;
-}
-
-// update centroid's coordinates and phase by traversing tree
-void QuadTree::update_centroid()
-{
-    // only traverse further if there are children
-    if (nW != NULL){
-        Point p1, p2, p3, p4, avg;
-        int m1=0, m2=0, m3=0, m4=0, m;
-        double x_bar, y_bar, phase_bar;
-
-        // if child has centroid, then update and retrieve it
-        if (nW->centroid.x == LEAF){
-            nW->update_centroid();
-            p1 = nW->centroid;
-            m1 = nW->mass;
-        }
-        if (nE->centroid.x == LEAF){
-            nE->update_centroid();
-            p2 = nE->centroid;
-            m2 = nE->mass;
-        }
-        if (sE->centroid.x == LEAF){
-            sE->update_centroid();
-            p3 = sE->centroid;
-            m3 = sE->mass;
-        }
-        if (sW->centroid.x == LEAF){
-            sW->update_centroid();
-            p4 = sW->centroid;
-            m4 = sW->mass;
+        // if there is space in this quad tree, add point
+        if (is_empty) {
+            centroid = p;
+            mass++;
+            is_empty = false;
+            return;
         }
 
+        // this tree already has a point, aka already has a centroid
+
+        // if no children, subdivide
+        if (is_leaf) {
+            subdivide();
+            if (nW->boundary.contains(centroid)) nW->insert(centroid);
+            else if (nE->boundary.contains(centroid)) nE->insert(centroid);
+            else if (sE->boundary.contains(centroid)) sE->insert(centroid);
+            else if (sW->boundary.contains(centroid)) sW->insert(centroid);
+            else throw;
+        }
+
+        // update current tree centroid
         // weighted averages of coordinate and phase
-        m = m1 + m2 + m3 + m4;
-        x_bar = (m1*p1.x+m2*p2.x+m3*p3.x+m4*p4.x)/m;
-        y_bar = (m1*p1.y+m2*p2.y+m3*p3.y+m4*p4.y)/m;
-        phase_bar = atan2((m1*sin(p1.phase)+m2*sin(p2.phase)+m3*sin(p3.phase)+m4*sin(p4.phase))/m,
-                          (m1*cos(p1.phase)+m2*cos(p2.phase)+m3*cos(p3.phase)+m4*cos(p4.phase))/m);
-        avg = Point(x_bar, y_bar, phase_bar);
-        centroid = avg;
+        int m_new = mass + 1;
+        double x_bar = (mass * centroid.x + p.x) / m_new;
+        double y_bar = (mass * centroid.y + p.y) / m_new;
+        double phase_bar = atan2((mass * sin(centroid.phase) + sin(p.phase)) / m_new,
+                                 (mass * cos(centroid.phase) + cos(p.phase)) / m_new);
+        centroid = Point(x_bar, y_bar, phase_bar);
+        mass = m_new;
+
+        // find new children that will eventually accept this point
+        if (nW->boundary.contains(p)) nW->insert(p);
+        else if (nE->boundary.contains(p)) nE->insert(p);
+        else if (sE->boundary.contains(p)) sE->insert(p);
+        else if (sW->boundary.contains(p)) sW->insert(p);
     }
-}
 
-std::vector<double> QuadTree::get_centroids(double x, double y, double theta)
-{
-    std::vector<double> out;
+    std::vector<double> get_centroids(double x, double y, double theta) {
+        std::vector<double> out;
 
-    if (centroid.x == LEAF){
+        if (is_empty){
+            return out;
+        }
+
+        double cx = boundary.center.x;
+        double cy = boundary.center.y;
+        double cw = 2 * boundary.radius;
+
+        if (is_leaf ||
+            cw / (sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy))) < theta) {
+
+            if (centroid.x == x && centroid.y == y) return out;
+
+            out.push_back(centroid.x);
+            out.push_back(centroid.y);
+            out.push_back(centroid.phase);
+            out.push_back(mass);
+
+            return out;
+        }
+
+        std::vector<double> v1, v2, v3, v4;
+        v1 = nW->get_centroids(x, y, theta);
+        v2 = nE->get_centroids(x, y, theta);
+        v3 = sE->get_centroids(x, y, theta);
+        v4 = sW->get_centroids(x, y, theta);
+
+        out.insert(out.end(), v1.begin(), v1.end());
+        out.insert(out.end(), v2.begin(), v2.end());
+        out.insert(out.end(), v3.begin(), v3.end());
+        out.insert(out.end(), v4.begin(), v4.end());
+
         return out;
     }
 
-    double cx = boundary.center.x;
-    double cy = boundary.center.y;
-    double cw = 2 * boundary.radius;
-
-    if (nW == NULL || cw/(sqrt((x-cx)*(x-cx)+(y-cy)*(y-cy)))<theta){
-        if (centroid.x == x && centroid.y == y) return out;
-
-        out.push_back(centroid.x);
-        out.push_back(centroid.y);
-        out.push_back(centroid.phase);
-        out.push_back(mass);
-
-        return out;
+    // destructor
+    ~QuadTree() {
+        delete nW; delete nE; delete sW; delete sE;
     }
-
-    std::vector<double> v1, v2, v3, v4;
-    v1 = nW->get_centroids(x, y, theta);
-    v2 = nE->get_centroids(x, y, theta);
-    v3 = sE->get_centroids(x, y, theta);
-    v4 = sW->get_centroids(x, y, theta);
-
-    out.insert(out.end(), v1.begin(), v1.end());
-    out.insert(out.end(), v2.begin(), v2.end());
-    out.insert(out.end(), v3.begin(), v3.end());
-    out.insert(out.end(), v4.begin(), v4.end());
-
-    return out;
-}
+};

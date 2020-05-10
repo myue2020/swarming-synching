@@ -2,9 +2,9 @@
 #include <fstream>
 #include <utility>
 #include <boost/numeric/odeint.hpp>
-#include <boost/numeric/odeint/external/mpi/mpi.hpp>
+#include <boost/numeric/odeint/external/openmp/openmp.hpp>
 #include <omp.h>
-#include <mpi.h>
+
 using namespace std;
 using namespace boost::numeric::odeint;
 
@@ -21,7 +21,7 @@ struct swarm {
         : n(n_), omega(n_, 0.1), J(J_), K(K_) {}
 
     void operator()(const vector<double> &x, vector<double> &dxdt, double t) const {
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for
         for(size_t i = 0; i < n; i++) {
             dxdt[3*i] = 0.;
             dxdt[3*i + 1] = 0.;
@@ -64,17 +64,12 @@ void print_points(const size_t n, const vector<double> &x, bool final) {
 }
 
 int main(int argc, char **argv) {
-//	int rank, size;
-//	MPI_Init(&argc, &argv);
-//	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-//	MPI_Comm_size(MPI_COMM_WORLD, &size);
-
-    srand(time(NULL));
+	srand(time(NULL));
     const size_t n = 400;
     const double J = 1., K = -0.1, dt = 0.1;
     vector<double> x(3*n);
 
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for
     for(size_t i = 0; i < n; i++) {
         double r = ((double) rand())/((double) RAND_MAX)*1.;
         double theta = ((double) rand())/((double) RAND_MAX)*2.*M_PI;
@@ -87,9 +82,6 @@ int main(int argc, char **argv) {
     swarm group(n, J, K);
     double t0 = omp_get_wtime();
     integrate_const(runge_kutta4< vector<double> >(), boost::ref(group), x, 0., 50., dt);
-    // if (rank == 0) {
-    	printf("Time taken: %f\n", omp_get_wtime()-t0);
-    // }
+    printf("Time taken: %f\n", omp_get_wtime()-t0);
     print_points(n, x, true);
-    // MPI_Finalize();
 }

@@ -41,22 +41,39 @@ Naively, the Swarming-Synching model can be simulated by pairwise calculation of
 https://github.com/myue2020/swarming-synching
 
 ### Infrastructure
+OpenMP and MPI hybrid model on AWS MPI cluster of t2.2xlarge EC2 instances --------------------- *add number of nodes*
 
+t2.2 xlarge Instance Specs:
+32GiB Memory, 8 vCPU ,Intel Xeon 3.3GHz
+Operating System: Ubuntu Server 18.04 LTS
 
 ### Dependents
+Odeint C++ Library
+Odeint is a modern C++ library for numerically solving Ordinary Differential Equations. We use built in functions in Odeint to handle to integration off all time steps.
+
 ### Implementation
-#### Naive Algorithm
+#### Naive Algorithm 
+1. Pairwise Compuation of Time Derivatives
+2. Integration 
 <img src="Images/refs/pairwise.png" width="400"/>
 
 #### Barnes-Hut Algorithm
 1. Quadtree
-2. 
+2. Computing Time Derivatives
 3. Integration
 <img src="Images/refs/barnes8.png" width="800"/>
 
+
 ### Example
 #### Plotting Into Graph
-This is example using matplotlib to plot graphs
+#### Naive Algorithm
+1. Initial State
+2. Final State
+This is example using 'xxx' to plot graphs
+
+#### Barnes-Hut Algorithm
+1. Initial State
+2. Final State
 
 ### Runtime Analysis
 

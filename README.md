@@ -94,9 +94,7 @@ After the time derivatives are calculated, we use the built-in function in Odein
 
 Our initial scheme includes broadcasting the tree data structure with MPI to parallelize the for-loop for computing the time derivatives and using OpenMP for parallelizing updating the particles, which does not need all the data in the tree. After some attempts at implementation, we realized that broadcasting a quadtree, which is a customized data structure, requires serialization of the data structure first before sending to MPI to handle its broadcast to worker nodes. This is on the one hand, very hard to implement and on the other hand, not particularly advantageous compared to just use a shared memory parallelization, so we replaced this part with OpenMP parallelization. However, we implemented a version that use MPI to broadcast the particles before building the Quadtree, which is similar to using OpenMP in functionality. To summarize, we did not eventually use MPI in a way that particularly distinguishes its benefit from a shared memory parallelization in that the intra-node communication feature did not see a good spot to step in.
 
-### Example
-#### Plotting Into Graph
-#### Naive Algorithm
+#### Naive Algorithm Example
 1. Initial State
 
 <img src="init_naive.png" width = "300"/>  \
@@ -108,7 +106,7 @@ Randomized initial states
 <img src="final_naive.png" width = "300"/>\
 Final stable solution of a continuous rainbow using the naive algorithm
 
-#### Barnes-Hut Algorithm
+#### Barnes-Hut Algorithm Example
 1. Initial State
 
 <img src="init_bh.png" width = "300"/>\
@@ -136,7 +134,7 @@ We see that the untouched naive implementation has the most linear speedup respo
 
 The Barnes-Hut implementation, on the other hand, has a significant portion of computation spent on constructing and updating the QuadTree structure, and its recursive nature makes parallelizing difficult. This tree code is left to run in serial, and instead only the for-loop to the update of positions and phases is run in parallel. Hence, for Barnes-Hut we see a cap in the trend of its speedup. We see a slower-than-linear trend in the left graph, and on the right graph an asymptotic cap of a value around 5 even when run with 8 threads.
 
-Lastly, we run our pairwise naive algorithm, but this time using MPI. Our swarming problem is not well suited for MPI frameworks, so the performance is terrible. MPI works best when each segment of data is mostly independent from other tasks, and only a minimal amount of data needs to be communicated among the tasks. Our swarming problem, however, requires each object to have full knowledge of every other object at each sweep of our timesteps, which in turn requires each "ghost exhange" to need to exchange the full dataset.
+Lastly, we run our pairwise naive algorithm, but this time using MPI. Our swarming problem is not well suited for MPI frameworks, so the performance is terrible. MPI works best when each segment of data is mostly independent from other tasks, and only a minimal amount of data needs to be communicated among the tasks. Our swarming problem, however, requires each object to have full knowledge of every other object at each sweep of the timesteps, which in turn requires each "ghost exhange" to exchange the full dataset. This means that each task needs to send its full data to every other task, and from the plots above we see that this causes the Naive MPI model to be extremely inefficient. On the right graph, we see that running MPI with two tasks is in fact strictly worse than running completely serially, as the entire setup of MPI and its overhead becomes unnecessary.
 
 
 #### Complexity Analysis

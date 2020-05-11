@@ -20,14 +20,16 @@ struct swarm {
     swarm(const size_t n_, double J_, double K_)
         : n(n_), omega(n_, 0.1), J(J_), K(K_) {}
 
+    // Update function
     void operator()(const vector<double> &x, vector<double> &dxdt, double t) const {
+    	// Initialize position and phase velocities - omega_i are all set to 0.1
 #pragma omp parallel for
         for(size_t i = 0; i < n; i++) {
             dxdt[3*i] = 0.;
             dxdt[3*i + 1] = 0.;
             dxdt[3*i + 2] = 0.1;
         }
-
+        // Calculate position and phase velocities by iterating over all points
 #pragma omp parallel for reduction(vec_add:dxdt) schedule(dynamic)
         for(size_t i = 0; i < n; i++) {
             size_t xi = 3*i, yi = 3*i + 1, ti = 3*i + 2;
@@ -65,7 +67,14 @@ void print_points(const size_t n, const vector<double> &x, bool final) {
 
 int main(int argc, char **argv) {
 	srand(time(NULL));
+	// Number of points in swarm
     const size_t n = stoi(argv[2]);
+
+    // (J = 0.1, K = 1) uniform
+    // (0.1, -1) random
+    // (1, 0) continuous rainbow
+    // (1, -0.1) discrete rainbow
+    // (1, -0.75) mixed rainbow
     const double J = 1., K = -0.1, dt = 0.1;
     vector<double> x(3*n);
 
@@ -80,11 +89,12 @@ int main(int argc, char **argv) {
 
     print_points(n, x, false);
 
-    // number of parallel threads
+    // Number of parallel threads
     omp_set_num_threads(stoi(argv[1]));
 
     swarm group(n, J, K);
     double t0 = omp_get_wtime();
+    // Pass to boost library integrator
     integrate_const(runge_kutta4< vector<double> >(), boost::ref(group), x, 0., 50., dt);
     printf("Time taken: %f\n", omp_get_wtime()-t0);
     print_points(n, x, true);

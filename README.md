@@ -49,8 +49,8 @@ Operating System: Ubuntu Server 16.04 LTS
 
 Each working solver (naive_solver.cc, naive_mpi_solver.cc, and barnes_hut_solver.cc) features its own main function that will run a default simulation with *J* = 1, *K* = -0.1, and *ω<sub>i</sub>* = 0.1, where a specified number of threads will run a specified number of points (the first and second arguments, respectively) instantiated with random phases and positions within the unit circle on a fourth-order Runge-Kutta integration for 50 seconds with a timestep of 0.1 s. All update algorithms are contained in the operator() function of the swarm struct, which is called at each timestep of the *odeint* integrator. See the following screenshot for reference:
 
-<img src="Images/refs/first_screenshot.png" width="400"/>
-<img src="Images/refs/second_screenshot.png" width="400"/>
+<img src="Images/refs/first_screenshot.png" width="600"/>
+<img src="Images/refs/second_screenshot.png" width="600"/>
 
 quadtree.cc provides the code for the quadtree structure as used for the Barnes-Hut solvers, while figure.py visualizes the csv files produced by any of the solvers in a manner similar to the original O'Keefe paper. All sub-directories (Images, plots, barnes_hut_theta_threshold) contain figures shown here or on the summary presentation presentation.pdf. 
 
@@ -69,10 +69,10 @@ All code is tested for correctness via visual comparison of final figures produc
 #### Naive Algorithm
 <img src="Images/refs/pairwise.png" width="400"/>
 
-For the naive algorithm, we simply perform the *O(n^2)* update via nested for-loops, though in naive_solver.cc we do attempt to increase efficiency slightly by only iterating through each pair once. This could not be transferred to the MPI solution since each processor cannot easily update another processor's data, thus requiring the use of a slightly different algorithm in naive_mpi_solver.cc. For each update, we first have each processor share their position and phase data with every other processor, before continuing with the update with normal OpenMP loops. This solver is constrained such that number of MPI tasks called for must evenly divide the number of points, for ease of the algorithm.
+For the naive algorithm, we simply perform the *O(n<sup>2</sup>)* update via nested for-loops, though in naive_solver.cc we do attempt to increase efficiency slightly by only iterating through each pair once. This could not be transferred to the MPI solution since each processor cannot easily update another processor's data, thus requiring the use of a slightly different algorithm in naive_mpi_solver.cc. For each update, we first have each processor share their position and phase data with every other processor, before continuing with the update with normal OpenMP loops. This solver is constrained such that number of MPI tasks called for must evenly divide the number of points, for ease of the algorithm.
 
 #### Barnes-Hut Algorithm
-The Barnes-Hut algorithm is often used in simulating N-body systems. It is based on the assumption that the force from many far-away bodies can be approximated with a single object located at the center of mass and carries the total mass of those bodies.
+The *O(n log n)* Barnes-Hut algorithm is often used in simulating N-body systems. It is based on the assumption that the force from many far-away bodies can be approximated with a single object located at the center of mass and carries the total mass of those bodies.
 
 <table>
 <tr>
@@ -173,7 +173,7 @@ Lastly, we run our pairwise naive algorithm, but this time using MPI. Our swarmi
 
 
 
-Here we show a plot of various runtimes for several trials of our algorithms. Note two comparisons: one between "Naive, 1 thread" and "Barnes-Hut, 1 thread", and the other between "Naive, 8 threads" and "Barnes-Hut, 8 threads". Both of these comparisons show a relationship that we hoped to find, which is an *n^2* scaling for the naive algorithm and an *nlog(n)* scaling for the Barnes-Hut algorithm. 
+Here we show a plot of various runtimes for several trials of our algorithms. Note two comparisons: one between "Naive, 1 thread" and "Barnes-Hut, 1 thread", and the other between "Naive, 8 threads" and "Barnes-Hut, 8 threads". Both of these comparisons show a relationship that we hoped to find, which is an *n<sup>2</sup>* scaling for the naive algorithm and an *nlog(n)* scaling for the Barnes-Hut algorithm. 
 
 #### Barnes-Hut accuracy-efficiency tradeoff
 There is a *theta* threshold in the Barnes-Hut tree that is used when considering the neighbors of a given point. So far in our simluations, we have set this threshold as 0.5 by default, and have not altered this parameter for consistency throughout our data. Here we briefly mention the effects of changing this parameter and what this entails for the Barnes-Hut approximation.
@@ -196,13 +196,11 @@ This is a tradeoff with accuracy, and at some point our approximation causes the
 \
 This is the tradeoff of using an approximation scheme. One should choose a threshold that satisfies both their accuracy needs and provides a practical computation time, and experimenting for the right balance will allow the efficiency of Barnes-Hut to shine through. 
 
-In the end, we successfully implement parallelized *O(n^2)* and *O(n log n)* models to accurately calculate swarms, and see not only a tradeoff between their efficiency and their accuracy but also between runtime and speedup (Barnes-Hut has lower speedup due to more serial work, but has faster runtime overall). We also designed a successful OpenMP/MPI hybrid model, though due to the naive algorithm adding more MPI tasks proved to be less efficient than adding more OpenMP threads. Major takeaways from this project included these tradeoffs as well as the general experience of using external libraries like *boost* in conjunction with OpenMP and MPI, and the implementation and linking challenges that can result from this. A very exciting direction to take this project would be the successful implementation of a hybrid OpenMP/MPI Barnes-Hut model, which would likely prove more promising than for the naive model since only centroids, rather than the entire stretch of data, would need to be passed between processors. Also, running the models with larger computing resources could provide very fascinating insight into the Barnes-Hut algorithm's potential use in large-scale swarmalator simulations.
-
 #### Challenges
 
 Applying complex parallelization stragies to code heavily featuring external libraries like *odeint*.
 
-Complexity of our Barnes-Hut tree structure did not lend itself to simple MPI communication schemes. However, we have proposed a potential Barnes-Hut MPI solution for the next iteration of design.
+The complexity of our Barnes-Hut tree structure did not lend itself to simple MPI communication schemes. However, we have proposed a potential Barnes-Hut MPI solution for the next iteration of design.
 
 - Serialize the Quadtree and send it under a MPI\_Type\_contiguous defined MPI Datatype. Or using Boost.MPI dependencies serialization::access to create a friend class of the Quadtree, functioning in a similar manner to the first approach. 
 - We also need to make sure MPI Barriers are placed properly before broadcasting the tree to worker nodes.
@@ -213,6 +211,9 @@ Complexity of our Barnes-Hut tree structure did not lend itself to simple MPI co
 <td><img src="Images/refs/barrier2.png" width="600"/></td>
 </tr>
 </table>
+
+#### Conclusion
+In the end, we successfully implement parallelized *O(n<sup>2</sup>)* and *O(n log n)* models to accurately calculate swarms, and see not only a tradeoff between their efficiency and their accuracy but also between runtime and speedup (Barnes-Hut has lower speedup due to more serial work, but has faster runtime overall). We also designed a successful OpenMP/MPI hybrid model, though due to the naive algorithm adding more MPI tasks proved to be less efficient than adding more OpenMP threads. Major takeaways from this project included these tradeoffs as well as the general experience of using external libraries like *boost* in conjunction with OpenMP and MPI, and the implementation and linking challenges that can result from this. A very exciting direction to take this project would be the successful implementation of a hybrid OpenMP/MPI Barnes-Hut model, which would likely prove more promising than for the naive model since only centroids, rather than the entire stretch of data, would need to be passed between processors. Also, running the models with larger computing resources could provide very fascinating insight into the Barnes-Hut algorithm's potential use in large-scale swarmalator simulations.
 
 
 ### References

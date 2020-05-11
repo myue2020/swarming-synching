@@ -64,7 +64,7 @@ void print_points(const size_t n, const vector<double> &x, bool final) {
 }
 
 int main(int argc, char **argv) {
-	srand(time(NULL));
+	srand(6);
     const size_t n = stoi(argv[2]);
     const double J = 1., K = -0.1, dt = 0.1;
     vector<double> x(3*n);

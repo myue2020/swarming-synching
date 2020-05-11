@@ -49,7 +49,8 @@ Operating System: Ubuntu Server 16.04 LTS
 
 Each working solver (naive_solver.cc, naive_mpi_solver.cc, and barnes_hut_solver.cc) features its own main function that will run a default simulation with *J* = 1, *K* = -0.1, and *ω<sub>i</sub>* = 0.1, where a specified number of threads will run a specified number of points (the first and second arguments, respectively) instantiated with random phases and positions within the unit circle on a fourth-order Runge-Kutta integration for 50 seconds with a timestep of 0.1 s. All update algorithms are contained in the operator() function of the swarm struct, which is called at each timestep of the *odeint* integrator. See the following screenshot for reference:
 
-SCREENSHOT
+<img src="Images/refs/first_screenshot.png" width="400"/>
+<img src="Images/refs/second_screenshot.png" width="400"/>
 
 quadtree.cc provides the code for the quadtree structure as used for the Barnes-Hut solvers, while figure.py visualizes the csv files produced by any of the solvers in a manner similar to the original O'Keefe paper. All sub-directories (Images, plots, barnes_hut_theta_threshold) contain figures shown here or on the summary presentation presentation.pdf. 
 
@@ -131,7 +132,7 @@ Final stable solution of a continuous rainbow using the Barnes-Hut algorithm. We
 
 #### Attempts at Optimization
 
-We experimented with different compiler flags to lower runtime, finding that -Ofast did not negatively affect the accuracy or speedup of parallelized algorithms in any case.
+We experimented with different compiler flags to lower runtime, finding that -Ofast did not negatively affect the accuracy or speedup of parallelized algorithms in any case. The below tests were conducted for the case of 500 simulation objects.
 
 |                       | -O0       | -O1       | -O2       | -O3       | -Ofast    |
 |-----------------------|-----------|-----------|-----------|-----------|-----------|

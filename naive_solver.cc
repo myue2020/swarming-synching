@@ -75,7 +75,7 @@ int main(int argc, char **argv) {
     // (1, 0) continuous rainbow
     // (1, -0.1) discrete rainbow
     // (1, -0.75) mixed rainbow
-    const double J = 1., K = -0.1, dt = 0.1;
+    const double J = 1, K = -0.75, dt = 0.1;
     vector<double> x(3*n);
 
 #pragma omp parallel for

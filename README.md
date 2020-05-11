@@ -68,7 +68,8 @@ Odeint is a modern C++ library for numerically solving Ordinary Differential Equ
 </tr>
 </table>
 2. Computing Time Derivatives  
-3. Integration
+
+3. Integration  
 <img src="Images/refs/barnes8.png" width="800"/>
 
 
@@ -88,7 +89,7 @@ This is example using 'xxx' to plot graphs
 <img src="plots/barnes_hut_naive_comparison.png" width = "450" />
 
 #### Barnes-Hut accuracy-efficiency tradeoff
-Here we show  
+There is a *theta* threshold 
 
 <img src="plots/theta_threshold.png" width = "450" />
 

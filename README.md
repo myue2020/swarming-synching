@@ -55,8 +55,8 @@ Odeint is a modern C++ library for numerically solving Ordinary Differential Equ
 
 ### Implementation
 #### Naive Algorithm
-1. Pairwise Compuation of Time Derivatives
-2. Integration
+1. Pairwise Compuation of Time Derivatives  
+2. Integration  
 <img src="Images/refs/pairwise.png" width="400"/>
 
 #### Barnes-Hut Algorithm
@@ -67,7 +67,7 @@ Odeint is a modern C++ library for numerically solving Ordinary Differential Equ
 <td><img src="Images/refs/traverse.gif" width="400"/></td>
 </tr>
 </table>
-2. Computing Time Derivatives
+2. Computing Time Derivatives  
 3. Integration
 <img src="Images/refs/barnes8.png" width="800"/>
 
@@ -88,6 +88,8 @@ This is example using 'xxx' to plot graphs
 <img src="plots/barnes_hut_naive_comparison.png" width = "450" />
 
 #### Barnes-Hut accuracy-efficiency tradeoff
+Here we show  
+
 <img src="plots/theta_threshold.png" width = "450" />
 
 

@@ -118,10 +118,14 @@ A *theta* of 0 is equivalent to solving the exact solution iterating through eve
 
 This is a tradeoff with accuracy, and at some point our approximation causes the stable solution to be visually incorrect. Here we show a progression of *theta* as 0, 0.5, 1, 1.5, and 2. We see that for ranges of *theta* between 0 and 1, the graph still looks visually close to correct, and higher threshold values eventaully cause the solution to be entirely different.
 
-<img src="barnes_hut_theta_threshold/final_b_0.png" width = "150" />
-<img src="barnes_hut_theta_threshold/final_b_1.png" width = "150" />
-<img src="barnes_hut_theta_threshold/final_b_15.png" width = "150" />
-<img src="barnes_hut_theta_threshold/final_b_2.png" width = "150" />  
+<table>
+<tr>
+<td> <img src="barnes_hut_theta_threshold/final_b_0.png" width = "150" />  </td>
+<td> <img src="barnes_hut_theta_threshold/final_b_1.png" width = "150" />  </td>
+<td> <img src="barnes_hut_theta_threshold/final_b_15.png" width = "150" />  </td>
+<td> <img src="barnes_hut_theta_threshold/final_b_2.png" width = "150" />  </td>
+</tr>
+</table>
 
 \
 This is the tradeoff of using an approximation scheme. One should choose a threshold that satisfies both their accuracy needs and provides a practical computation time, and experimenting for the right balance will allow the efficiency of Barnes-Hut shine through.

@@ -112,9 +112,19 @@ This is example using 'xxx' to plot graphs
 #### Barnes-Hut accuracy-efficiency tradeoff
 There is a *theta* threshold in the Barnes-Hut tree that is used when considering the neighbors of a given point. So far in our simluations, we have set this threshold as 0.5 by default, and have not altered this parameter for consistency throughout our data. Here we briefly mention the effects of changing this parameter and what this entails for the Barnes-Hut approximation.
 
-A *theta* of 0 is equivalent to solving the exact solution using every pair
+A *theta* of 0 is equivalent to solving the exact solution iterating through every pairwise interaction. We calculate the ratio of a neighbor point's grid width over the distance to that neighbore from the current point, and if this ratio is less than *theta* then we approximate this neighbor with its grid. As *theta* increases, more and more points get approximated as rough blocks, so we save on computation time as shown in the graph below.
 
-<img src="plots/theta_threshold.png" width = "450" />
+<img src="plots/theta_threshold.png" width = "450" />  <br>
+
+This is a tradeoff with accuracy, and at some point our approximation causes the stable solution to be visually incorrect. Here we show a progression of *theta* as 0, 0.5, 1, 1.5, and 2. We see that for ranges of *theta* between 0 and 1, the graph still looks visually close to correct, and higher threshold values eventaully cause the solution to be entirely different.
+
+<img src="barnes_hut_theta_threshold/final_b_0.png" width = "150" />
+<img src="barnes_hut_theta_threshold/final_b_1.png" width = "150" />
+<img src="barnes_hut_theta_threshold/final_b_15.png" width = "150" />
+<img src="barnes_hut_theta_threshold/final_b_2.png" width = "150" />  
+
+\
+This is the tradeoff of using an approximation scheme. One should choose a threshold that satisfies both their accuracy needs and provides a practical computation time, and experimenting for the right balance will allow the efficiency of Barnes-Hut shine through.
 
 
 ### References

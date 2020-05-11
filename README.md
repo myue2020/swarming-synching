@@ -198,6 +198,22 @@ This is the tradeoff of using an approximation scheme. One should choose a thres
 
 In the end, we successfully implement parallelized *O(n^2)* and *O(n log n)* models to accurately calculate swarms, and see not only a tradeoff between their efficiency and their accuracy but also between runtime and speedup (Barnes-Hut has lower speedup due to more serial work, but has faster runtime overall). We also designed a successful OpenMP/MPI hybrid model, though due to the naive algorithm adding more MPI tasks proved to be less efficient than adding more OpenMP threads. Major takeaways from this project included these tradeoffs as well as the general experience of using external libraries like *boost* in conjunction with OpenMP and MPI, and the implementation and linking challenges that can result from this. A very exciting direction to take this project would be the successful implementation of a hybrid OpenMP/MPI Barnes-Hut model, which would likely prove more promising than for the naive model since only centroids, rather than the entire stretch of data, would need to be passed between processors. Also, running the models with larger computing resources could provide very fascinating insight into the Barnes-Hut algorithm's potential use in large-scale swarmalator simulations.
 
+#### Challenges
+
+Applying complex parallelization stragies to code heavily featuring external libraries like *odeint*.
+
+Complexity of our Barnes-Hut tree structure did not lend itself to simple MPI communication schemes. However, we have proposed a potential Barnes-Hut MPI solution for the next iteration of design.
+
+- Serialize the Quadtree and send it under a MPI\_Type\_contiguous defined MPI Datatype. Or using Boost.MPI dependencies serialization::access to create a friend class of the Quadtree, functioning in a similar manner to the first approach. 
+- We also need to make sure MPI Barriers are placed properly before broadcasting the tree to worker nodes.
+
+<table>
+<tr>
+<td><img src="Images/refs/barrier2.png" width="500"/></td>
+<td><img src="Images/refs/nary.png" width="300"/></td>
+</tr>
+</table>
+
 
 ### References
 1. O’Keeffe and Bettstetter. *A review of swarmalators and their potential in bio-inspired computing}*  https://arxiv.org/pdf/1903.11561.pdf. 2019.

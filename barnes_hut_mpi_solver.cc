@@ -25,7 +25,7 @@ struct swarm_barnes_hut {
     const size_t n;
     double J, K, theta;
 
-    swarm_barnes_hut(const size_t n_, double J_, double K_, double theta_):
+    swarm_barnes_hut(const size_t n_, double J_, double K_, double theta_, int rank):
         n(n_), omega(n_, 0.1), J(J_), K(K_), theta(theta_) {}
 
     void operator()(const vector<double> &x, vector<double> &dxdt, double t) const {
@@ -66,6 +66,7 @@ struct swarm_barnes_hut {
 //                dxdt[ti] += tdot * js[mj];
 //            }
 //        }
+        
 #pragma omp parallel for reduction(vec_add:dxdt) schedule(dynamic)
         for(size_t i = 0; i < n; i++) {
             size_t xi = 3*i, yi = 3*i + 1, ti = 3*i + 2;
@@ -88,7 +89,9 @@ struct swarm_barnes_hut {
             }
         }
         
-
+    
+        MPI_Allgather(x + (rank * part_size), part_size, MPI_DOUBLE,
+                      x, part_size, MPI_DOUBLE, MPI_COMM_WORLD);
     }
 };
 
@@ -159,14 +162,12 @@ int main(int argc, char **argv) {
     // number of parallel threads
     omp_set_num_threads(stoi(argv[1]));
 
-    swarm_barnes_hut group(n, J, K, theta_threshold);
+    swarm_barnes_hut group(n, J, K, theta_threshold, rank);
     
     double t0 = omp_get_wtime();
     
-    
     integrate_const(runge_kutta4< vector<double> >(), boost::ref(group), x, 0., 50., dt);
-    MPI_Allgather(x + (rank * part_size), part_size, MPI_DOUBLE,
-                  x, part_size, MPI_DOUBLE, MPI_COMM_WORLD);
+
     // if (rank == 0) {
         printf("Time taken: %f\n", omp_get_wtime()-t0);
     // }

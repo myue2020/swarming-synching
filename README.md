@@ -141,9 +141,11 @@ Lastly, we run our pairwise naive algorithm, but this time using MPI. Our swarmi
 
 #### Complexity Analysis
 
-<img src="plots/barnes_hut_naive_comparison.png" width = "450" />\
+<img src="plots/barnes_hut_naive_comparison.png" width = "450" /> <br>
 
-Here we show a plot of various runtimes for several trials of our algorithms. I want to
+
+
+Here we show a plot of various runtimes for several trials of our algorithms. Note two comparisons: one between "Naive, 1 thread" and "Barnes-Hut, 1 thread", and the other between "Naive, 8 threads" and "Barnes-Hut, 8 threads". Both of these comparisons show a relationship that we hoped to find, which is an *n^2* scaling for the naive algorithm and an *nlog(n)* scaling for the Barnes-Hut algorithm. 
 
 #### Barnes-Hut accuracy-efficiency tradeoff
 There is a *theta* threshold in the Barnes-Hut tree that is used when considering the neighbors of a given point. So far in our simluations, we have set this threshold as 0.5 by default, and have not altered this parameter for consistency throughout our data. Here we briefly mention the effects of changing this parameter and what this entails for the Barnes-Hut approximation.

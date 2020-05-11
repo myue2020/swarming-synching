@@ -2,71 +2,72 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-# threads = [1,2,3,4,5,6,7,8]
-#
-# naive_200 = [1,
-# 1.902418316,
-# 2.770583215,
-# 3.593385291,
-# 4.363267402,
-# 5.320462219,
-# 6.086717785,
-# 6.314405632]
-#
-# bh_200 = [1,
-# 1.707503158,
-# 2.29308753,
-# 2.800334601,
-# 3.333483046,
-# 3.800381114,
-# 4.202925353,
-# 4.485626752]
-#
-# mpi_cores = [1,2,4,8]
-#
-# naivempi_200 = [1,
-# 1.719008124,
-# 2.336504086,
-# 1.84885406]
-#
-#
-#
-# naivempi_600 = [1,
-# 1.91667029,
-# 3.57399645,
-# 5.672715268]
-#
-# naive_600 = [1,
-# 1.913102955,
-# 2.786122694,
-# 3.713057601,
-# 4.608205028,
-# 5.506942101,
-# 6.390209825,
-# 7.155778284]
-#
-# bh_600 = [0.9999999998,
-# 1.714829618,
-# 2.358118033,
-# 2.985696396,
-# 3.517673651,
-# 4.077462303,
-# 4.530600021,
-# 4.918268292]
-#
-# plt.plot(threads, naive_600, label='Naive, n=600')
-# plt.plot(threads, naive_200, label='Naive, n=200')
-# plt.plot(mpi_cores, naivempi_600, label='Naive MPI, n=600')
-# plt.plot(threads, bh_600, label='Barnes-Hut, n=600')
-# plt.plot(threads, bh_200, label='Barnes-Hut, n=200')
-# plt.plot(mpi_cores, naivempi_200, label='Naive MPI, n=200')
-#
-# plt.legend()
-# plt.title('Speedup Ratios vs Threads/Cores')
-# plt.xlabel('Parallel threads/cores')
-# plt.ylabel('Speedup')
-# plt.savefig('speedup_vs_threads.png')
-# plt.show()
+threads = [1,2,3,4,5,6,7,8]
+
+naive_200 = [1,
+1.902418316,
+2.770583215,
+3.593385291,
+4.363267402,
+5.320462219,
+6.086717785,
+6.314405632]
+
+bh_200 = [1,
+1.707503158,
+2.29308753,
+2.800334601,
+3.333483046,
+3.800381114,
+4.202925353,
+4.485626752]
+
+mpi_cores = [1,2,4,8]
+
+naivempi_200 = [1,
+0.7047452799,
+0.9579013633,
+0.7579784841]
+
+
+
+naivempi_600 = [1,
+0.7794331933,
+1.453401496,
+2.306866548]
+
+naive_600 = [1,
+1.913102955,
+2.786122694,
+3.713057601,
+4.608205028,
+5.506942101,
+6.390209825,
+7.155778284]
+
+bh_600 = [0.9999999998,
+1.714829618,
+2.358118033,
+2.985696396,
+3.517673651,
+4.077462303,
+4.530600021,
+4.918268292]
+
+plt.plot(threads, naive_600, label='Naive, n=600')
+plt.plot(threads, naive_200, label='Naive, n=200')
+plt.plot(threads, bh_600, label='Barnes-Hut, n=600')
+plt.plot(threads, bh_200, label='Barnes-Hut, n=200')
+plt.plot(mpi_cores, naivempi_600, label='Naive MPI, n=600')
+
+plt.plot(mpi_cores, naivempi_200, label='Naive MPI, n=200')
+
+plt.legend()
+plt.title('Speedup Ratios vs Threads/Tasks')
+plt.xlabel('Parallel threads/tasks')
+plt.ylabel('Speedup')
+plt.savefig('speedup_vs_threads.png')
+plt.show()
 #
 #
 #
@@ -118,51 +119,51 @@ import matplotlib.pyplot as plt
 
 
 
-
-
-n_b =[ 100,
-	200,
-    	300	,
-        400	,
-        500	,
-        600,
-        	1000
-,            	1800
-,                3000
-,                	4000]
-
-t_b = [1.6809258,	4.468020667,	8.056646,	11.545364,	15.64071333,	19.80075633	,38.669263,	84.460101,	155.81142,	226.409964]
-
-n_n =[ 100,
-	200,
-    	300	,
-        400	,
-        500	,
-        600,
-        	1000
-,            	1800
-,                3000]
-t_n =[0.480207,	1.996413,	4.286402,	7.705542,	12.110508,	17.622435,	48.121326,	154.50399,	433.893076]
-
-naive_8 = [0.097615,	0.316168,	0.639793,	1.091878,	1.706664,	2.462686,	6.663127,	21.211438,	58.891395]
-
-naive_mpi_4 = [1.076992,	2.084153,	3.565921,	5.863923,	8.795277,	12.12496,	31.92705,	100.794319,	277.93463]
-
-bh_8 = [0.401014,	0.996075,	1.65221,	2.397928,	3.188045,	4.025961	,7.489845	,16.273504,	28.310874	,40.628309]
-
-
-plt.plot(n_n, t_n, label='Naive, 1 thread')
-plt.plot(n_n, naive_mpi_4, label='Naive MPI, 4 tasks')
-plt.plot(n_b, t_b, label='Barnes-Hut, 1 thread')
-plt.plot(n_n, naive_8, label='Naive, 8 threads')
-plt.plot(n_b, bh_8, label='Barnes-Hut, 8 threads')
-
-plt.title('Comparing Naive and Barnes-Hut Complexities')
-plt.xlabel('Simulation size')
-plt.ylabel('Runtime')
-plt.legend()
-plt.savefig('barnes_hut_naive_comparison.png')
-plt.show()
+#
+#
+# n_b =[ 100,
+# 	200,
+#     	300	,
+#         400	,
+#         500	,
+#         600,
+#         	1000
+# ,            	1800
+# ,                3000
+# ,                	4000]
+#
+# t_b = [1.6809258,	4.468020667,	8.056646,	11.545364,	15.64071333,	19.80075633	,38.669263,	84.460101,	155.81142,	226.409964]
+#
+# n_n =[ 100,
+# 	200,
+#     	300	,
+#         400	,
+#         500	,
+#         600,
+#         	1000
+# ,            	1800
+# ,                3000]
+# t_n =[0.480207,	1.996413,	4.286402,	7.705542,	12.110508,	17.622435,	48.121326,	154.50399,	433.893076]
+#
+# naive_8 = [0.097615,	0.316168,	0.639793,	1.091878,	1.706664,	2.462686,	6.663127,	21.211438,	58.891395]
+#
+# naive_mpi_4 = [1.076992,	2.084153,	3.565921,	5.863923,	8.795277,	12.12496,	31.92705,	100.794319,	277.93463]
+#
+# bh_8 = [0.401014,	0.996075,	1.65221,	2.397928,	3.188045,	4.025961	,7.489845	,16.273504,	28.310874	,40.628309]
+#
+#
+# plt.plot(n_n, t_n, label='Naive, 1 thread')
+# plt.plot(n_n, naive_mpi_4, label='Naive MPI, 4 tasks')
+# plt.plot(n_b, t_b, label='Barnes-Hut, 1 thread')
+# plt.plot(n_n, naive_8, label='Naive, 8 threads')
+# plt.plot(n_b, bh_8, label='Barnes-Hut, 8 threads')
+#
+# plt.title('Comparing Naive and Barnes-Hut Complexities')
+# plt.xlabel('Simulation size')
+# plt.ylabel('Runtime')
+# plt.legend()
+# plt.savefig('barnes_hut_naive_comparison.png')
+# plt.show()
 
 
 

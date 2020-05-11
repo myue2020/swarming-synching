@@ -87,6 +87,10 @@ This is example using 'xxx' to plot graphs
 
 <img src="plots/barnes_hut_naive_comparison.png" width = "450" />
 
+#### Barnes-Hut accuracy-efficiency tradeoff
+<img src="plots/theta_threshold.png" width = "450" />
+
+
 ### References
 1. O’Keeffe and Bettstetter. *A review of swarmalators and their potential in bio-inspired computing}*  https://arxiv.org/pdf/1903.11561.pdf. 2019.
 2. O’Keeffe, Hong, and Strogatz. *Oscillators that sync and swarm*,  https://www.nature.com/articles/s41467-017-01190-3. 2017.

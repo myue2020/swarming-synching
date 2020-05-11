@@ -89,7 +89,9 @@ This is example using 'xxx' to plot graphs
 <img src="plots/barnes_hut_naive_comparison.png" width = "450" />
 
 #### Barnes-Hut accuracy-efficiency tradeoff
-There is a *theta* threshold 
+There is a *theta* threshold in the Barnes-Hut tree that is used when considering the neighbors of a given point. So far in our simluations, we have set this threshold as 0.5 by default, and have not altered this parameter for consistency throughout our data. Here we briefly mention the effects of changing this parameter and what this entails for the Barnes-Hut approximation.
+
+A *theta* of 0 is equivalent to solving the exact solution using every pair
 
 <img src="plots/theta_threshold.png" width = "450" />
 

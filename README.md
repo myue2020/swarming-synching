@@ -209,7 +209,7 @@ Complexity of our Barnes-Hut tree structure did not lend itself to simple MPI co
 
 <table>
 <tr>
-<td><img src="Images/refs/barrier2.png" width="500"/></td>
+<td><img src="Images/refs/barrier2.png" width="600"/></td>
 <td><img src="Images/refs/nary.png" width="300"/></td>
 </tr>
 </table>

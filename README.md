@@ -60,18 +60,39 @@ Odeint is a modern C++ library for numerically solving Ordinary Differential Equ
 <img src="Images/refs/pairwise.png" width="400"/>
 
 #### Barnes-Hut Algorithm
-1. Quadtree
+The Barnes-Hut Algorithm is often used in simulating N-body systems. It is based on the assumption that the force from many far-away bodies can be approximated with a single object located at the center of mass and carries the total mass of those bodies.
+
 <table>
 <tr>
 <td><img src="Images/refs/quadtree.gif" width="400"/></td>
 <td><img src="Images/refs/traverse.gif" width="400"/></td>
 </tr>
 </table>
-2. Computing Time Derivatives  
 
-3. Integration  
+- Quadtree
+
+In quadtree, each internal node has 4 children. As shown in the first figure, when inserting particles into the tree, quadrants are recursively subdivided into 4 nodes at each level, until each leaf in the tree contains at most one particle.
+
+- Computing Time Derivatives  
+
+To calculate the overall time derivatives of spatial position and phase of particle $b$, use the following recursive procedure, starting with the root of the quad-tree:
+
+1. If the current node is an external node (and it is not particle *b*), calculate the influence from the current node on *b*, and add this amount to *b*'s net force.
+
+2. Otherwise, calculate the ratio *s/d*. If *s/d<\theta*, treat this internal node as a single body, and calculate its influence on particle *b*, and add this amount to *b*'s net force.
+
+3. Otherwise, run the procedure recursively on each of the current node's children.
+
+In the above computation, we use the same time derivative formulae as in the naive algorithm. Overall, the Barnes-Hut algorithm has a time complexity of *O(n log n)* as both the build tree and traversal process (*n* particles, *n* traversals) has a time complexity of *O(n log n)*.
+
+- Integration  
+
+After the time derivatives are calculated, we use the built-in function in Odeint to handle integration, thus update the positions and phases of the particles in the swarming-synchronizing system.
+
+- Parallelization Scheme
 <img src="Images/refs/barnes8.png" width="800"/>
 
+Our initial scheme includes broadcasting the tree data structure with MPI to parallelize the for-loop for computing the time derivatives and using OpenMP for parallelizing updating the particles, which does not need all the data in the tree. After some attempts at implementation, we realized that broadcasting a quadtree, which is a customized data structure, requires serialization of the data structure first before sending to MPI to handle its broadcast to worker nodes. This is on the one hand, very hard to implement and on the other hand, not particularly advantageous compared to just use a shared memory parallelization, so we replaced this part with OpenMP parallelization. However, we implemented a version that use MPI to broadcast the particles before building the Quadtree, which is similar to using OpenMP in functionality. To summarize, we did not eventually use MPI in a way that particularly distinguishes its benefit from a shared memory parallelization in that the intra-node communication feature did not see a good spot to step in.
 
 ### Example
 #### Plotting Into Graph

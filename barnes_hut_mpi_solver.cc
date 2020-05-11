@@ -28,8 +28,7 @@ struct swarm_barnes_hut {
         QuadTree tree;
         
         
-        //build tree on process 0
-        if(world.rank() == 0){
+
             for(size_t i = 0; i < n; i++) {
                 size_t xi = 3*i, yi = 3*i + 1, ti = 3*i + 2;
                 dxdt[xi] = 0.;
@@ -38,11 +37,9 @@ struct swarm_barnes_hut {
                 // insert each point into the tree
                 tree.insert(Point(x[xi], x[yi], x[ti]));
             }
-        }
         
-        //broadcast tree to all processes
-        boost::mpi::broadcast(world, tree, 0);
-
+        
+        
 #pragma omp parallel for reduction(vec_add:dxdt) schedule(dynamic)
        
         for(size_t i = 0; i < n; i++) {
@@ -66,9 +63,6 @@ struct swarm_barnes_hut {
             }
         }
         
-        // gather results from all nodes
-        vector<double> out;
-        boost::mpi::gather(world, dxdt, out, 0);
     }
 };
 
@@ -83,13 +77,33 @@ void print_points(const size_t n, const vector<double> &x, bool final) {
 
 int main(int argc, char **argv) {
     
-    boost::mpi::environment env(argc, argv);
-    boost::mpi::communicator world;
-
+    int rank, size;
+    int part_size;
+    int p_index;
+    int name_length;
+    char name[MPI_MAX_PROCESSOR_NAME];
+    
+    MPI_Init(&argc, &argv);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    
+    MPI_Type_contiguous(2, MPI_DOUBLE, &MPI_POSITION);
+//    MPI_Type_contiguous(1, MPI_DOUBLE, &MPI_PHASE);
+    MPI_Type_commit(&MPI_POSITION);
+//    MPI_Type_commit(&MPI_PHASE);
+    
+    MPI_Get_processor_name(name, &name_length);
+    
+    
     srand(time(NULL));
     const size_t n = 500;
     const double dt = 0.1;
+    double positions[n][2];
+    double phases[n];
 
+    
+    part_size = n / size;
+    p_index = rank * part_size;
     // (0.1, 1) uniform
     // (0.1, -1) random
     // (1, 0) continuous rainbow
@@ -100,7 +114,6 @@ int main(int argc, char **argv) {
 
     vector<double> x(3*n);
 
-    if(world.rank() == 0){
     #pragma omp parallel for
     for(size_t i = 0; i < n; i++) {
         double r = ((double) rand())/((double) RAND_MAX)*1.;
@@ -108,11 +121,18 @@ int main(int argc, char **argv) {
         x[3*i] = r*cos(theta);
         x[3*i + 1] = r*sin(theta);
         x[3*i + 2] = ((double) rand())/((double) RAND_MAX)*2.*M_PI;
-    }
-
-        print_points(n, x, false);
         
+        positions[i][0] = x[3*i];
+        positions[i][1] = x[3*i+1];
+        phases = x[3*i+2];
     }
+        
+        
+    print_points(n, x, false);
+    
+    MPI_Bcast(positions, n, MPI_POSITION, 0, MPI_COMM_WORLD);
+    MPI_Bcast(phases, n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    
     
     // number of parallel threads
     omp_set_num_threads(stoi(argv[1]));
@@ -120,6 +140,8 @@ int main(int argc, char **argv) {
     swarm_barnes_hut group(n, J, K, theta_threshold);
     
     double t0 = omp_get_wtime();
+    
+    
     integrate_const(runge_kutta4< vector<double> >(), boost::ref(group), x, 0., 50., dt);
     // if (rank == 0) {
     	printf("Time taken: %f\n", omp_get_wtime()-t0);

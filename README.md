@@ -42,7 +42,7 @@ https://github.com/myue2020/swarming-synching
 
 ### Infrastructure
 OpenMP and MPI hybrid model on AWS MPI cluster of t2.2xlarge EC2 instances --------------------- *add number of nodes*
-t2.2 xlarge Instance Specs: 
+t2.2 xlarge Instance Specs:
 
 32GiB Memory, 8 vCPU ,Intel Xeon 3.3GHz
 
@@ -54,13 +54,19 @@ Odeint C++ Library
 Odeint is a modern C++ library for numerically solving Ordinary Differential Equations. We use built-in functions in Odeint to handle the integration of all time steps.
 
 ### Implementation
-#### Naive Algorithm 
+#### Naive Algorithm
 1. Pairwise Compuation of Time Derivatives
-2. Integration 
+2. Integration
 <img src="Images/refs/pairwise.png" width="400"/>
 
 #### Barnes-Hut Algorithm
 1. Quadtree
+<table>
+<tr>
+<td><img src="Images/refs/quadtree.gif" width="400"/></td>
+<td><img src="Images/refs/traverse.gif" width="400"/></td>
+</tr>
+</table>
 2. Computing Time Derivatives
 3. Integration
 <img src="Images/refs/barnes8.png" width="800"/>
@@ -80,6 +86,6 @@ This is example using 'xxx' to plot graphs
 ### Runtime Analysis
 
 ### References
-1. O’Keeffe and Bettstetter. *A review of swarmalators and their potential in bio-inspired computing}*  https://arxiv.org/pdf/1903.11561.pdf. 2019. 
+1. O’Keeffe and Bettstetter. *A review of swarmalators and their potential in bio-inspired computing}*  https://arxiv.org/pdf/1903.11561.pdf. 2019.
 2. O’Keeffe, Hong, and Strogatz. *Oscillators that sync and swarm*,  https://www.nature.com/articles/s41467-017-01190-3. 2017.
 3. Gan and Xu. *Efficient Implementation of the Barnes-Hut Octree Algorithm for Monte Carlo Simulations of Charged Systems*  https://arxiv.org/pdf/1305.1825.pdf. 2013.

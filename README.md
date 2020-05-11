@@ -198,7 +198,7 @@ This is the tradeoff of using an approximation scheme. One should choose a thres
 
 #### Challenges
 
-Applying complex parallelization stragies to code heavily featuring external libraries like *odeint*.
+Applying complex parallelization strategies to code heavily featuring external libraries like *odeint*.
 
 The complexity of our Barnes-Hut tree structure did not lend itself to simple MPI communication schemes. However, we have proposed a potential Barnes-Hut MPI solution for the next iteration of design.
 

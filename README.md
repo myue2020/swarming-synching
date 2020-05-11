@@ -98,12 +98,22 @@ Our initial scheme includes broadcasting the tree data structure with MPI to par
 #### Plotting Into Graph
 #### Naive Algorithm
 1. Initial State
+
+<img src="init_naive.png" width = "300" />\
+
 2. Final State
-This is example using 'xxx' to plot graphs
+
+<img src="final_naive.png" width = "300" />\
 
 #### Barnes-Hut Algorithm
 1. Initial State
+
+<img src="init_bh.png" width = "300" />\
+
+
 2. Final State
+
+<img src="final_bh.png" width = "300" />\
 
 ### Runtime Analysis
 

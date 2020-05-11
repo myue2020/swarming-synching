@@ -90,7 +90,7 @@ int main(int argc, char **argv) {
     // Number of parallel threads
     omp_set_num_threads(stoi(argv[1]));
 
-    srand(6);
+    srand(time(NULL));
     // Number of points in swarm
     const size_t n = stoi(argv[2]);
 
@@ -121,7 +121,7 @@ int main(int argc, char **argv) {
     split(x, x_split);
 
     swarm group(n, J, K);
-    double t0 = omp_get_wtime(); 
+    double t0 = omp_get_wtime();
     // Pass to boost library integrator
     integrate_const(runge_kutta4< mpi_state< vector<double> > >(), boost::ref(group), x_split, 0., 50., dt);
     if (world.rank() == 0) {
@@ -132,4 +132,3 @@ int main(int argc, char **argv) {
         print_points(n, x, true);
     }
 }
-             

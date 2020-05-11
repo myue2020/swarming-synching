@@ -62,12 +62,42 @@ plt.plot(threads, bh_200, label='Barnes-Hut, n=200')
 plt.plot(mpi_cores, naivempi_200, label='Naive MPI, n=200')
 
 plt.legend()
-plt.title('Speedup Ratios')
+plt.title('Speedup Ratios vs Threads/Cores')
 plt.xlabel('Parallel threads/cores')
 plt.ylabel('Speedup')
 plt.savefig('speedup_vs_threads.png')
 plt.show()
 
+
+
+
+
+
+
+n = [100	,200	,300,	400	,500,	600	,1000,	1800,	3000]
+
+bh_2 = [1.653943368,	1.707503158,	1.77340194,	1.710811489,	1.722160122	,1.714829618,	1.764083443	,1.819176349	,1.806516695]
+bh_8 = [4.191688569,	4.485626752	,4.876284492,	4.814725046,	4.906051619,	4.918268293	,5.162892289,	5.190037806	,5.503589186]
+
+naive_2 = [1.874402792,	1.902418316,	1.867352024,	1.914925152	,1.90491911,	1.913102955,	1.87307007,	1.893697435	,1.897263513]
+naive_8 = [4.919397634,	6.314405632,	6.69967005,	7.057145579	,7.096011869,	7.155778284,	7.222033439,	7.283994136,	7.367682087]
+
+naive_mpi_2 = [0.5008829472	,0.7047452799,	0.7210326318,	0.7466389801,	0.7627926968,	0.7794331933,	0.7792739631,	0.7739602591,	0.7803132518]
+
+naive_mpi_4 = [0.4458779638,	0.9579013633,	1.20204626,	1.314059206,	1.376933097	,1.453401496,	1.507227445,	1.532864069	,1.561133551]
+
+plt.plot(n, naive_8, label='Naive, 8 threads')
+plt.plot(n, bh_8, label='Barnes-Hut, 8 threads')
+plt.plot(n, naive_2, label='Naive, 2 threads')
+plt.plot(n, bh_2, label='Barnes-Hut, 2 threads')
+plt.plot(n, naive_mpi_4, label='Naive MPI, 4 tasks')
+plt.plot(n, naive_mpi_2, label='Naive MPI, 2 tasks')
+plt.legend()
+plt.xlabel('n')
+plt.ylabel('Speedup')
+plt.title('Speedup Ratios vs Simulation Size')
+plt.savefig('speedup_vs_n.png')
+plt.show()
 
 
 

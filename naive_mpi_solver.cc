@@ -25,7 +25,7 @@ struct swarm {
     void operator()(const mpi_state< vector<double> > &x, mpi_state< vector<double> > &dxdt, double t) const {
         assert(x().size() % 3 == 0);
         vector<double> xx(3*n);
-        size_t start = n / x.world.size() * x.world.rank();
+        size_t start = 3*n / x.world.size() * x.world.rank();
         // Get all other positions and phases
         copy(x().begin(), x().end(), xx.begin() + start);
         for(size_t i = 1; i < x.world.size(); i++) {
@@ -33,7 +33,7 @@ struct swarm {
             vector<double> temp;
             x.world.send(out_rank, 0, x());
             x.world.recv(in_rank, 0, temp);
-            copy(temp.begin(), temp.end(), xx.begin() + n / x.world.size() * in_rank);
+            copy(temp.begin(), temp.end(), xx.begin() + 3*n / x.world.size() * in_rank);
         }
         vector<double> dxxdt = dxdt();
         // Initialize position and phase velocities - omega_i are all set to 0.1
@@ -48,7 +48,7 @@ struct swarm {
         for(size_t i = 0; i < dxxdt.size() / 3; i++) {
             size_t xi = start + 3*i, yi = start + 3*i + 1, ti = start + 3*i + 2;
             for(size_t j = 0; j < n; j++) {
-                if (j != i) {
+                if (j != i + start / 3) {
                     int xj = 3*j, yj = 3*j + 1, tj = 3*j + 2;
                     double dx = xx[xj] - xx[xi],
                            dy = xx[yj] - xx[yi],

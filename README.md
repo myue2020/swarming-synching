@@ -99,21 +99,25 @@ Our initial scheme includes broadcasting the tree data structure with MPI to par
 #### Naive Algorithm
 1. Initial State
 
-<img src="init_naive.png" width = "300" />\
+<img src="init_naive.png" width = "300"/>  \
+Randomized initial states
+
 
 2. Final State
 
-<img src="final_naive.png" width = "300" />\
+<img src="final_naive.png" width = "300"/>\
+Final stable solution using the naive algorithm
 
 #### Barnes-Hut Algorithm
 1. Initial State
 
-<img src="init_bh.png" width = "300" />\
-
+<img src="init_bh.png" width = "300"/>\
+Randomized initial states
 
 2. Final State
 
-<img src="final_bh.png" width = "300" />\
+<img src="final_bh.png" width = "300"/>\
+Final stable solution using the Barnes-Hut algorithm.
 
 ### Runtime Analysis
 

@@ -106,7 +106,7 @@ Randomized initial states
 2. Final State
 
 <img src="final_naive.png" width = "300"/>\
-Final stable solution using the naive algorithm
+Final stable solution of a continuous rainbow using the naive algorithm
 
 #### Barnes-Hut Algorithm
 1. Initial State
@@ -117,11 +117,33 @@ Randomized initial states
 2. Final State
 
 <img src="final_bh.png" width = "300"/>\
-Final stable solution using the Barnes-Hut algorithm.
+Final stable solution of a continuous rainbow using the Barnes-Hut algorithm.
 
-### Runtime Analysis
+### Discussion and Analysis
 
-<img src="plots/barnes_hut_naive_comparison.png" width = "450" />
+#### Speedup Analysis
+
+<table>
+<tr>
+  <td> <img src="plots/speedup_vs_threads.png" width = "450" />  </td>
+  <td> <img src="plots/speedup_vs_n.png" width = "450" />  </td>
+</tr>
+</table>
+
+On the left plot, we show the trends of weak scaling for this problem, both for the naive implementations and for the Barnes-Hut framework. On the right plot, we see the strong scaling of our implementations as we dial up the simulation size.
+
+We see that the untouched naive implementation has the most linear speedup response to parallelization. This is as expected, since this pure implementation is based on two straightforward for-loops that iterate throughout the timesteps, allowing most of the program to be parallelizable; in other words, very little of the code remains to run in serial, and little overhead work is done. On the right plot, we see that speedup seem to approach the expected value as we increase the number of simulation objects.
+
+The Barnes-Hut implementation, on the other hand, has a significant portion of computation spent on constructing and updating the QuadTree structure, and its recursive nature makes parallelizing difficult. This tree code is left to run in serial, and instead only the for-loop to the update of positions and phases is run in parallel. Hence, for Barnes-Hut we see a cap in the trend of its speedup. We see a slower-than-linear trend in the left graph, and on the right graph an asymptotic cap of a value around 5 even when run with 8 threads.
+
+Lastly, we run our pairwise naive algorithm, but this time using MPI. Our swarming problem is not well suited for MPI frameworks, so the performance is terrible. MPI works best when each segment of data is mostly independent from other tasks, and only a minimal amount of data needs to be communicated among the tasks. Our swarming problem, however, requires each object to have full knowledge of every other object at each sweep of our timesteps, which in turn requires each "ghost exhange" to need to exchange the full dataset.
+
+
+#### Complexity Analysis
+
+<img src="plots/barnes_hut_naive_comparison.png" width = "450" />\
+
+Here we show a plot of various runtimes for several trials of our algorithms. I want to
 
 #### Barnes-Hut accuracy-efficiency tradeoff
 There is a *theta* threshold in the Barnes-Hut tree that is used when considering the neighbors of a given point. So far in our simluations, we have set this threshold as 0.5 by default, and have not altered this parameter for consistency throughout our data. Here we briefly mention the effects of changing this parameter and what this entails for the Barnes-Hut approximation.

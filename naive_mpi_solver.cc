@@ -90,10 +90,10 @@ int main(int argc, char **argv) {
     // Number of parallel threads
     omp_set_num_threads(stoi(argv[1]));
 
-    srand(time(NULL));
+    srand(6);
     // Number of points in swarm
     const size_t n = stoi(argv[2]);
-    
+
     // (J = 0.1, K = 1) uniform
     // (0.1, -1) random
     // (1, 0) continuous rainbow

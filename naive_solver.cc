@@ -66,7 +66,7 @@ void print_points(const size_t n, const vector<double> &x, bool final) {
 }
 
 int main(int argc, char **argv) {
-	srand(time(NULL));
+	srand(6);
 	// Number of points in swarm
     const size_t n = stoi(argv[2]);
 
